@@ -1,28 +1,43 @@
 require("dotenv").config();
+
 const fs = require("fs");
-const TelegramBot = require("node-telegram-bot-api");
+const config = JSON.parse(
+ fs.readFileSync(
+  "config/config.json",
+  "utf8"
+)
+);
+
 const { chromium } = require("playwright");
 
-const bot = new TelegramBot(process.env.BOT_TOKEN);
+const { sendNotification } = require("./telegram");
 
-const targets = [
-  "Amul High Protein Milk, 250 mL | Pack of 32"
-];
+const targets = JSON.parse(
+  fs.readFileSync("data/products.json", "utf8")
+);
 let previousStock = {};
+let isRunning = false;
 
-if (fs.existsSync("stock.json")) {
+if (fs.existsSync("data/stock.json")) {
   previousStock = JSON.parse(
-    fs.readFileSync("stock.json", "utf8")
+    fs.readFileSync("data/stock.json", "utf8")
   );
 }
 
-(async () => {
+async function checkStock() {
+   if (isRunning) {
+    console.log("Previous check still running...");
+    return;
+  }
+
+  isRunning = true;
 
   const browser = await chromium.launch({
-    headless: false
+    headless: config.headless
   });
 
   const page = await browser.newPage();
+  let productsFound = 0;
 
   page.on("response", async (response) => {
 
@@ -40,6 +55,7 @@ if (fs.existsSync("stock.json")) {
         for (const product of data.data) {
 
           if (targets.includes(product.name)) {
+            productsFound++;
 
             console.log(
   product.name,
@@ -53,20 +69,14 @@ const previous =
   previousStock[product.name] || 0;
 
 if (
-  previous <= 0 &&
-  currentStock > 0
-) {
-
-  await bot.sendMessage(
-    process.env.CHAT_ID,
-    `🚨 BACK IN STOCK
-
-Product:
-${product.name}
-
-Inventory:
-${currentStock}`
-  );
+  currentStock > 0 &&
+  currentStock !== previous
+){
+await sendNotification(
+  process.env.CHAT_ID,
+  product.name,
+  currentStock
+);
 
   console.log("Notification Sent");
 
@@ -79,7 +89,7 @@ previousStock[product.name] =
 
         }
         fs.writeFileSync(
-  "stock.json",
+  "data/stock.json",
   JSON.stringify(previousStock, null, 2)
 );
 
@@ -100,18 +110,53 @@ console.log("Stock file updated");
     timeout: 60000
   }
 );
-await page.waitForSelector("#search");
+await page.fill("#search", config.pincode);
 
-await page.fill("#search", "302017");
+console.log("Pincode entered");
 
-await page.waitForTimeout(1000);
+// Wait for the suggestion to appear
+await page.waitForSelector("a.searchitem-name", {
+  timeout: 10000
+});
 
-await page.keyboard.press("ArrowDown");
+console.log("Suggestion appeared");
 
-await page.waitForTimeout(300);
+// Click the suggestion
+await page.click("a.searchitem-name");
 
-await page.keyboard.press("Enter");
-await page.waitForTimeout(5000);
+const response = await page.waitForResponse(
+  response =>
+    response.url().includes("ms.products") &&
+    response.status() === 200,
+  { timeout: 15000 }
+);
+
+console.log("Products API received");
+
+const data = await response.json();
+
+
+console.log(`Products Found: ${productsFound}`);
+
 await browser.close();
+isRunning = false;
 
-})();
+}
+
+checkStock();
+setInterval(() => {
+
+  console.log(
+    "\n================================="
+  );
+  console.log(
+    "Checking stock:",
+    new Date().toLocaleString()
+  );
+  console.log(
+    "=================================\n"
+  );
+
+  checkStock();
+
+},  30 * 1000);

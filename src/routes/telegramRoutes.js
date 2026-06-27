@@ -45,4 +45,39 @@ router.post("/connect", (req, res) => {
 
 });
 
+
+router.post("/disconnect", (req, res) => {
+
+    const { username } = req.body;
+
+    const users = JSON.parse(
+        fs.readFileSync(FILE, "utf8")
+    );
+
+    const user = users.find(
+        u => u.username === username
+    );
+
+    if (!user) {
+
+        return res.status(404).json({
+            message: "User not found"
+        });
+
+    }
+
+    user.chatId = null;
+
+    fs.writeFileSync(
+        FILE,
+        JSON.stringify(users, null, 2)
+    );
+
+    res.json({
+        message: "Telegram disconnected"
+    });
+
+});
+
+
 module.exports = router;

@@ -165,7 +165,7 @@ function startStockChecker() {
 
         checkStock();
 
-    }, 5 * 60 * 1000);
+    }, 1 * 30 * 1000);
 
 }
 

@@ -2,6 +2,23 @@ const express = require("express");
 const fs = require("fs");
 
 const router = express.Router();
+const path = require("path");
+
+const USER_FILE = path.join(
+    __dirname,
+    "..",
+    "..",
+    "data",
+    "users.json"
+);
+
+const PREFERENCE_FILE = path.join(
+    __dirname,
+    "..",
+    "..",
+    "data",
+    "preferences.json"
+);
 
 router.post("/signup", (req, res) => {
 
@@ -64,6 +81,46 @@ router.post("/login", (req, res) => {
 
     res.json({
         message: "Login successful"
+    });
+
+});
+
+
+
+router.delete("/delete",(req,res)=>{
+
+    const { username } = req.body;
+
+    let users=JSON.parse(
+        fs.readFileSync(USER_FILE,"utf8")
+    );
+
+    users=users.filter(
+        u=>u.username!==username
+    );
+
+    fs.writeFileSync(
+        USER_FILE,
+        JSON.stringify(users,null,2)
+    );
+
+    let preferences=JSON.parse(
+        fs.readFileSync(PREFERENCE_FILE,"utf8")
+    );
+
+    preferences=preferences.filter(
+        u=>u.username!==username
+    );
+
+    fs.writeFileSync(
+        PREFERENCE_FILE,
+        JSON.stringify(preferences,null,2)
+    );
+
+    res.json({
+
+        message:"Account deleted"
+
     });
 
 });

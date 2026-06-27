@@ -1,6 +1,15 @@
 const express = require("express");
 
 const router = express.Router();
+const path = require("path");
+
+const FILE = path.join(
+    __dirname,
+    "..",
+    "..",
+    "data",
+    "preferences.json"
+);
 
 const fs = require("fs");
 
@@ -97,5 +106,42 @@ router.get("/:username", (req, res) => {
 
 });
 
+
+
+
+router.post("/reset", (req,res)=>{
+
+    const { username } = req.body;
+
+    const preferences = JSON.parse(
+        fs.readFileSync(FILE,"utf8")
+    );
+
+    const user = preferences.find(
+        u=>u.username===username
+    );
+
+    if(!user){
+
+        return res.status(404).json({
+            message:"User not found"
+        });
+
+    }
+
+    user.pincode="";
+
+    user.products=[];
+
+    fs.writeFileSync(
+        FILE,
+        JSON.stringify(preferences,null,2)
+    );
+
+    res.json({
+        message:"Preferences reset"
+    });
+
+});
 
 module.exports = router;

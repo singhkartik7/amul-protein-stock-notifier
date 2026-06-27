@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard</title>
+
+    <link rel="stylesheet" href="css/dashboard.css">
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Amul Protein Tracker</h1>
+
+        <h2 id="welcome">
+            Welcome 👋
+        </h2>
+
+        <div class="pincode-box">
+
+            <label>Pincode</label>
+
+            <input
+                type="text"
+                id="pincode"
+                maxlength="6"
+                placeholder="Enter your pincode">
+
+        </div>
+<input
+    type="text"
+    id="searchProduct"
+    placeholder="🔍 Search products..."
+>
+        <h3>Select Products</h3>
+
+        <div id="productsContainer">
+
+            <!-- Product cards will appear here -->
+
+        </div>
+
+        <button id="saveBtn">
+            Save Preferences
+        </button>
+
+<button id="resetBtn">
+    Reset Preferences
+</button>
+        <div class="telegram-box">
+
+            <h3>Telegram</h3>
+
+            <p id="telegramStatus">
+                🔴 Not Connected
+            </p>
+
+           <div class="telegramButtons">
+
+    <button id="telegramBtn">
+        Connect Telegram
+    </button>
+
+    <button id="disconnectTelegramBtn">
+        Disconnect Telegram
+    </button>
+
+</div>
+
+        </div>
+
+        <button id="logoutBtn">
+            Logout
+        </button>
+
+        <button id="deleteBtn">
+    Delete Account
+</button>
+
+    </div>
+
+    <script src="js/dashboard.js"></script>
+<div id="toast">
+
+</div>
+</body>
+
+</html>

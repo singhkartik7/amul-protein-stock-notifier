@@ -1,26 +1,28 @@
 const express = require("express");
-const fs = require("fs");
+
 
 const router = express.Router();
-const path = require("path");
+const {
 
-const USER_FILE = path.join(
-    __dirname,
-    "..",
-    "..",
-    "data",
-    "users.json"
-);
+    findUserByUsername,
 
-const PREFERENCE_FILE = path.join(
-    __dirname,
-    "..",
-    "..",
-    "data",
-    "preferences.json"
-);
+    createUser,
 
-router.post("/signup", (req, res) => {
+    deleteUser
+
+} = require("../models/userModel");
+
+const {
+
+    deletePreference,
+
+    getPreferenceByUserId
+
+} = require("../models/preferenceModel");
+
+const pool = require("../database/db");
+
+router.post("/signup", async (req, res) => {
 
     const { username, password } = req.body;
 
@@ -30,50 +32,40 @@ router.post("/signup", (req, res) => {
         });
     }
 
-    const users = JSON.parse(
-        fs.readFileSync("data/users.json", "utf8")
-    );
+    const existingUser =
+    await findUserByUsername(username);
 
-    const existingUser = users.find(
-        user => user.username === username
-    );
+if (existingUser) {
 
-    if (existingUser) {
-        return res.status(400).json({
-            message: "Username already exists"
-        });
-    }
+    return res.status(400).json({
 
-    users.push({
-        username,
-        password
+        message: "Username already exists"
+
     });
 
-    fs.writeFileSync(
-        "data/users.json",
-        JSON.stringify(users, null, 2)
-    );
+}
+
+await createUser(
+
+    username,
+
+    password
+
+);
 
     res.json({
         message: "Signup successful"
     });
 
 });
-router.post("/login", (req, res) => {
+router.post("/login", async (req, res) => {
 
     const { username, password } = req.body;
 
-    const users = JSON.parse(
-        fs.readFileSync("data/users.json", "utf8")
-    );
+    const user =
+    await findUserByUsername(username);
 
-    const user = users.find(
-        user =>
-            user.username === username &&
-            user.password === password
-    );
-
-    if (!user) {
+    if (!user || user.password !== password) {
         return res.status(401).json({
             message: "Invalid username or password"
         });
@@ -85,44 +77,62 @@ router.post("/login", (req, res) => {
 
 });
 
+router.delete("/delete", async (req, res) => {
 
+    try {
 
-router.delete("/delete",(req,res)=>{
+        const { username } = req.body;
 
-    const { username } = req.body;
+        const user = await findUserByUsername(username);
 
-    let users=JSON.parse(
-        fs.readFileSync(USER_FILE,"utf8")
-    );
+        if (!user) {
 
-    users=users.filter(
-        u=>u.username!==username
-    );
+            return res.status(404).json({
 
-    fs.writeFileSync(
-        USER_FILE,
-        JSON.stringify(users,null,2)
-    );
+                message: "User not found"
 
-    let preferences=JSON.parse(
-        fs.readFileSync(PREFERENCE_FILE,"utf8")
-    );
+            });
 
-    preferences=preferences.filter(
-        u=>u.username!==username
-    );
+        }
 
-    fs.writeFileSync(
-        PREFERENCE_FILE,
-        JSON.stringify(preferences,null,2)
-    );
+        const preference = await getPreferenceByUserId(user.id);
 
-    res.json({
+        if (preference) {
 
-        message:"Account deleted"
+            await pool.query(
 
-    });
+                `DELETE FROM tracked_products
+                 WHERE preference_id = $1`,
+
+                [preference.id]
+
+            );
+
+            await deletePreference(user.id);
+
+        }
+
+        await deleteUser(user.id);
+
+        res.json({
+
+            message: "Account deleted"
+
+        });
+
+    }
+
+    catch (err) {
+
+        console.error(err);
+
+        res.status(500).json({
+
+            message: "Failed to delete account"
+
+        });
+
+    }
 
 });
-
 module.exports = router;

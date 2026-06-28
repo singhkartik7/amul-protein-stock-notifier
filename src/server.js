@@ -4,7 +4,7 @@ const cors = require("cors");
 const app = express();
 app.use(cors());
 app.use(express.json());
-const stockRoutes = require("./routes/stockRoutes");
+
 const productRoutes = require("./routes/productRoutes");
 const healthRoutes = require("./routes/healthRoutes");
 app.use(express.json());
@@ -23,8 +23,7 @@ app.use("/telegram", telegramRoutes);
 
 app.use("/preferences", preferencesRoutes);
 
-// Stock API
-app.use("/stock", stockRoutes);
+
 
 // Products API
 app.use("/products", productRoutes);

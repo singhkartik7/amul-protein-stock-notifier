@@ -46,14 +46,67 @@
 
         </div>
 
-        <button id="saveBtn">
-            Save Preferences
+      <hr>
+
+<div class="notification-box">
+
+    <h3>🔔 Notification Settings</h3>
+
+    <label for="notifyDays">
+
+        Notify me for
+
+    </label>
+
+    <select id="notifyDays">
+
+        <option value="1">1 Day</option>
+
+        <option value="3">3 Days</option>
+
+        <option value="7" selected>7 Days</option>
+
+        <option value="15">15 Days</option>
+
+        <option value="30">30 Days</option>
+
+    </select>
+
+    <div class="notificationButtons">
+
+        <button id="activateNotificationBtn">
+
+            🟢 Activate Notifications
+
         </button>
 
-<button id="resetBtn">
-    Reset Preferences
+        <button id="stopNotificationBtn">
+
+            🔴 Stop Notifications
+
+        </button>
+
+    </div>
+
+    <p id="notificationStatus">
+
+        🔴 Notifications Stopped
+
+    </p>
+
+</div>
+
+<hr>
+
+<button id="saveBtn">
+    💾 Save Preferences
 </button>
-        <div class="telegram-box">
+
+<button id="resetBtn">
+    🔄 Reset Preferences
+</button>
+
+<div class="telegram-box">
 
             <h3>Telegram</h3>
 

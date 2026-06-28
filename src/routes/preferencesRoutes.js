@@ -1,147 +1,364 @@
 const express = require("express");
 
 const router = express.Router();
-const path = require("path");
 
-const FILE = path.join(
-    __dirname,
-    "..",
-    "..",
-    "data",
-    "preferences.json"
-);
+const {
+    findUserByUsername
+} = require("../models/userModel");
 
-const fs = require("fs");
+const {
+    savePreference,
+    getPreferenceByUserId,
+    updateNotifyUntil,
+    stopNotifications
+} = require("../models/preferenceModel");
 
-router.post("/", (req, res) => {
+const {
+    addTrackedProducts,
+    deleteTrackedProducts,
+    getTrackedProducts
+} = require("../models/trackedProductModel");
 
-    const {
+router.post("/", async (req, res) => {
 
-        username,
+    try {
 
-        pincode,
+        const {
 
-        selectedProducts
+            username,
 
-    } = req.body;
+            pincode,
 
-    const preferences = JSON.parse(
+            selectedProducts
 
-        fs.readFileSync(
+        } = req.body;
 
-            "data/preferences.json",
+        const user =
+            await findUserByUsername(username);
 
-            "utf8"
+        if (!user) {
 
-        )
+            return res.status(404).json({
 
-    );
+                message: "User not found"
 
-    const existingUser = preferences.findIndex(
+            });
 
-        user => user.username === username
+        }
 
-    );
+        const existing =
+            await getPreferenceByUserId(user.id);
 
-    const existing = preferences.find(
-    user => user.username === username
-);
+        const chatId =
+            existing ? existing.chat_id : null;
 
-const newPreference = {
+        const preference =
+            await savePreference(
 
-    username,
+                user.id,
 
-    pincode,
+                pincode,
 
-    products: selectedProducts,
+                chatId
 
-    chatId: existing?.chatId
+            );
 
-};
+        await deleteTrackedProducts(
+            preference.id
+        );
 
-    if (existingUser !== -1) {
+        await addTrackedProducts(
 
-        preferences[existingUser] = newPreference;
+            preference.id,
 
-    } else {
+            selectedProducts
 
-        preferences.push(newPreference);
+        );
+
+        res.json({
+
+            message:
+                "Preferences Saved Successfully"
+
+        });
 
     }
+    catch (err) {
 
-    fs.writeFileSync(
+        console.log(err);
 
-        "data/preferences.json",
+        res.status(500).json({
 
-        JSON.stringify(preferences, null, 2)
+            message:
+                "Server Error"
 
-    );
-
-    res.json({
-
-        message: "Preferences Saved Successfully"
-
-    });
-
-});
-
-router.get("/:username", (req, res) => {
-
-    const preferences = JSON.parse(
-        fs.readFileSync(
-            "data/preferences.json",
-            "utf8"
-        )
-    );
-
-    const user = preferences.find(
-        u => u.username === req.params.username
-    );
-
-    if (!user) {
-        return res.json(null);
-    }
-
-    res.json(user);
-
-});
-
-
-
-
-router.post("/reset", (req,res)=>{
-
-    const { username } = req.body;
-
-    const preferences = JSON.parse(
-        fs.readFileSync(FILE,"utf8")
-    );
-
-    const user = preferences.find(
-        u=>u.username===username
-    );
-
-    if(!user){
-
-        return res.status(404).json({
-            message:"User not found"
         });
 
     }
 
-    user.pincode="";
+});
 
-    user.products=[];
+router.get("/:username", async (req, res) => {
 
-    fs.writeFileSync(
-        FILE,
-        JSON.stringify(preferences,null,2)
-    );
+    try {
 
-    res.json({
-        message:"Preferences reset"
-    });
+        const user =
+            await findUserByUsername(
+
+                req.params.username
+
+            );
+
+        if (!user) {
+
+            return res.json(null);
+
+        }
+
+        const preference =
+            await getPreferenceByUserId(
+
+                user.id
+
+            );
+
+        if (!preference) {
+
+            return res.json(null);
+
+        }
+
+        const products =
+            await getTrackedProducts(
+
+                preference.id
+
+            );
+
+       res.json({
+
+    username:
+        user.username,
+
+    pincode:
+        preference.pincode,
+
+    products,
+
+    chatId:
+        preference.chat_id,
+
+    notifyUntil:
+        preference.notify_until
 
 });
 
+    }
+    catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+
+            message:
+                "Server Error"
+
+        });
+
+    }
+
+});
+
+router.post("/reset", async (req, res) => {
+
+    try {
+
+        const { username } =
+            req.body;
+
+        const user =
+            await findUserByUsername(
+                username
+            );
+
+        if (!user) {
+
+            return res.status(404).json({
+
+                message:
+                    "User not found"
+
+            });
+
+        }
+
+        const preference =
+            await getPreferenceByUserId(
+                user.id
+            );
+
+        if (!preference) {
+
+            return res.status(404).json({
+
+                message:
+                    "Preference not found"
+
+            });
+
+        }
+
+        await savePreference(
+
+            user.id,
+
+            "",
+
+            preference.chat_id
+
+        );
+
+        await deleteTrackedProducts(
+
+            preference.id
+
+        );
+
+        res.json({
+
+            message:
+                "Preferences reset"
+
+        });
+
+    }
+    catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+
+            message:
+                "Server Error"
+
+        });
+
+    }
+
+});
+
+router.post("/notifications/start", async (req, res) => {
+
+    try {
+
+        const {
+
+            username,
+
+            days
+
+        } = req.body;
+
+        const user =
+            await findUserByUsername(username);
+
+        if (!user) {
+
+            return res.status(404).json({
+
+                message: "User not found"
+
+            });
+
+        }
+
+        const notifyUntil = new Date(
+
+            Date.now() +
+
+            days * 24 * 60 * 60 * 1000
+
+        );
+
+        await updateNotifyUntil(
+
+            user.id,
+
+            notifyUntil
+
+        );
+
+        res.json({
+
+            message: "Notifications activated"
+
+        });
+
+    }
+
+    catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+
+            message: "Server Error"
+
+        });
+
+    }
+
+});
+
+
+router.post("/notifications/stop", async (req, res) => {
+
+    try {
+
+        const {
+
+            username
+
+        } = req.body;
+
+        const user =
+            await findUserByUsername(username);
+
+        if (!user) {
+
+            return res.status(404).json({
+
+                message: "User not found"
+
+            });
+
+        }
+
+        await stopNotifications(
+
+            user.id
+
+        );
+
+        res.json({
+
+            message: "Notifications stopped"
+
+        });
+
+    }
+
+    catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+
+            message: "Server Error"
+
+        });
+
+    }
+
+});
 module.exports = router;

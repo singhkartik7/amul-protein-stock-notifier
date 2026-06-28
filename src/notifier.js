@@ -1,39 +1,87 @@
+const {
+
+    saveStock
+
+} = require("./models/stockModel");
+
 async function shouldNotify(
-  product,
-  previousStock,
-  sendNotification,
-  chatId,
-  pincode
+
+    product,
+
+    stockMap,
+
+    sendNotification,
+
+    chatId,
+
+    pincode
+
 ) {
-  const currentStock = product.inventory_quantity;
 
-  if (!previousStock[pincode]) {
+    const key =
 
-    previousStock[pincode] = {};
+        `${pincode}|${product.name}`;
 
-}
+    const currentStock =
 
-const previous =
-    previousStock[pincode][product.name] || 0;
+        product.inventory_quantity;
 
-  if (
-    currentStock > 0 &&
-    currentStock !== previous
-  ) {
+    const previousStock =
 
-    await sendNotification(
-      chatId,
-      product.name,
-      currentStock
+        stockMap.has(key)
+
+            ? stockMap.get(key)
+
+            : 0;
+
+    if (
+
+        currentStock > 0 &&
+
+        currentStock !== previousStock
+
+    ) {
+
+        await sendNotification(
+
+            chatId,
+
+            product.name,
+
+            currentStock
+
+        );
+
+        console.log(
+
+            `Notification sent for ${product.name}`
+
+        );
+
+    }
+
+    stockMap.set(
+
+        key,
+
+        currentStock
+
     );
 
-    console.log("Notification Sent");
-  }
+    await saveStock(
 
-  previousStock[pincode][product.name] =
-    currentStock;
+        product.name,
+
+        pincode,
+
+        currentStock
+
+    );
+
 }
 
 module.exports = {
-  shouldNotify,
+
+    shouldNotify
+
 };

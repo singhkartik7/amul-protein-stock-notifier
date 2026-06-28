@@ -148,6 +148,77 @@ else {
         "🔴 Not Connected";
 
 }
+const notificationStatus =
+    document.getElementById(
+        "notificationStatus"
+    );
+
+if (!data.notifyUntil) {
+
+    notificationStatus.innerHTML =
+
+        "🔴 Notifications Stopped";
+
+}
+else {
+
+    const expiry =
+        new Date(data.notifyUntil);
+
+    const now =
+        new Date();
+
+    if (expiry <= now) {
+
+        notificationStatus.innerHTML =
+
+            "🟡 Notifications Expired";
+
+    }
+    else {
+
+        const remainingDays =
+            Math.ceil(
+
+                (expiry - now) /
+
+                (1000 * 60 * 60 * 24)
+
+            );
+
+        notificationStatus.innerHTML = `
+
+🟢 <strong>Notifications Active</strong>
+
+<br><br>
+
+📅 Expires on:
+
+${expiry.toLocaleDateString(
+
+    "en-IN",
+
+    {
+
+        day: "numeric",
+
+        month: "long",
+
+        year: "numeric"
+
+    }
+
+)}
+
+<br><br>
+
+⏳ ${remainingDays} day${remainingDays > 1 ? "s" : ""} remaining
+
+`;
+
+    }
+
+}
 
 }
 async function initialize() {
@@ -252,7 +323,152 @@ document
     }
 
 });
+document
+.getElementById("activateNotificationBtn")
+.addEventListener("click", async () => {
 
+    const pincode =
+        document.getElementById("pincode").value;
+
+    if (pincode.length !== 6) {
+
+        showToast("❌ Save your pincode first");
+
+        return;
+
+    }
+
+    if (selectedProducts.length === 0) {
+
+        showToast("❌ Select at least one product");
+
+        return;
+
+    }
+
+    const days = Number(
+
+        document.getElementById(
+
+            "notifyDays"
+
+        ).value
+
+    );
+
+    try {
+
+        const response = await fetch(
+
+            "http://localhost:3001/preferences/notifications/start",
+
+            {
+
+                method: "POST",
+
+                headers: {
+
+                    "Content-Type": "application/json"
+
+                },
+
+                body: JSON.stringify({
+
+                    username,
+
+                    days
+
+                })
+
+            }
+
+        );
+
+        if (!response.ok) {
+
+            throw new Error();
+
+        }
+
+        showToast(
+    "🟢 Notifications Activated"
+);
+
+await loadPreferences();
+
+    }
+
+    catch (err) {
+
+        console.log(err);
+
+        showToast(
+
+            "❌ Failed to activate notifications"
+
+        );
+
+    }
+
+});
+
+document
+.getElementById("stopNotificationBtn")
+.addEventListener("click", async () => {
+
+    try {
+
+        const response = await fetch(
+
+            "http://localhost:3001/preferences/notifications/stop",
+
+            {
+
+                method: "POST",
+
+                headers: {
+
+                    "Content-Type": "application/json"
+
+                },
+
+                body: JSON.stringify({
+
+                    username
+
+                })
+
+            }
+
+        );
+
+        if (!response.ok) {
+
+            throw new Error();
+
+        }
+
+       showToast(
+    "🔴 Notifications Stopped"
+);
+
+await loadPreferences();
+
+    }
+
+    catch (err) {
+
+        console.log(err);
+
+        showToast(
+
+            "❌ Failed to stop notifications"
+
+        );
+
+    }
+
+});
 document
 .getElementById("logoutBtn")
 .addEventListener("click",()=>{
@@ -274,6 +490,37 @@ document
         "_blank"
 
     );
+
+    let attempts = 0;
+
+    const interval = setInterval(async () => {
+
+        attempts++;
+
+        await loadPreferences();
+
+        if (
+
+            document
+                .getElementById("telegramStatus")
+                .textContent
+                .includes("Connected")
+
+        ) {
+
+            clearInterval(interval);
+
+            showToast("✅ Telegram Connected");
+
+        }
+
+        if (attempts >= 15) {
+
+            clearInterval(interval);
+
+        }
+
+    }, 2000);
 
 });
 

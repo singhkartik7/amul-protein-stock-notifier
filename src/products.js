@@ -1,47 +1,69 @@
 async function processProducts(
+
     data,
-    targets,
-    previousStock,
+
+    users,
+
+    stockMap,
+
     sendNotification,
-    chatId,
-    pincode,
-    shouldNotify
+
+    shouldNotify,
+
+    pincode
+
 ) {
 
-  let productsFound = 0;
+    let productsFound = 0;
 
-  if (!data.data) {
-    return productsFound;
-  }
+    if (!data.data) {
 
-  const targetNames = new Set(targets);
-
-  for (const product of data.data) {
-
-    if (targetNames.has(product.name)) {
-
-      productsFound++;
-
-      console.log(
-        product.name,
-        "Inventory:",
-        product.inventory_quantity
-      );
-
-      await shouldNotify(
-    product,
-    previousStock,
-    sendNotification,
-    chatId,
-    pincode
-);
+        return productsFound;
 
     }
-  }
 
-  return productsFound;
+    for (const product of data.data) {
+
+        for (const user of users) {
+
+            if (!user.products.includes(product.name)) {
+
+                continue;
+
+            }
+
+            productsFound++;
+
+            console.log(
+
+                `${product.name} : ${product.inventory_quantity}`
+
+            );
+
+            await shouldNotify(
+
+                product,
+
+                stockMap,
+
+                sendNotification,
+
+                user.chatId,
+
+                pincode
+
+            );
+
+        }
+
+    }
+
+    return productsFound;
+
 }
 
 module.exports = {
-  processProducts,
+
+    processProducts
+
 };

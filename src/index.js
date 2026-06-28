@@ -1,139 +1,152 @@
 require("dotenv").config();
-const headless =
-    process.env.HEADLESS === "true";
-const { selectPincode } = require("./pincode");
-const fs = require("fs");
-const path = require("path");
-const PREFERENCES_FILE = path.join(
-    __dirname,
-    "..",
-    "data",
-    "preferences.json"
-);
 
-const { openProteinPage } = require("./amul");
-const { processProducts } = require("./products");
-const {
-  loadStock,
-  saveStock,
-} = require("./stockStore");
-const { shouldNotify } = require("./notifier");
+const headless = process.env.HEADLESS === "true";
 
 const { launchBrowser } = require("./browser");
-
+const { openProteinPage } = require("./amul");
+const { selectPincode } = require("./pincode");
+const { processProducts } = require("./products");
+const { shouldNotify } = require("./notifier");
 const { sendNotification } = require("./telegram");
-function loadPreferences() {
 
-    return JSON.parse(
-        fs.readFileSync(
-            PREFERENCES_FILE,
-            "utf8"
-        )
-    );
+const {
+    getGroupedPreferences
+} = require("./models/preferenceModel");
 
-}
+const {
+    loadStockMap
+} = require("./models/stockModel");
 
-let previousStock = loadStock();
 let isRunning = false;
 
 async function checkStock() {
 
     if (isRunning) {
+
         console.log("Previous check still running...");
+
         return;
+
     }
 
     isRunning = true;
-    const preferences = loadPreferences();
 
     const browser = await launchBrowser(headless);
 
-    
-
     try {
 
-       let productsFound = 0;
+        const groupedPreferences =
+            await getGroupedPreferences();
 
-    for (const user of preferences) {
+        const stockMap =
+            await loadStockMap();
 
-        if (!user.chatId) {
+        let productsFound = 0;
 
-            continue;
+        for (const pincode of Object.keys(groupedPreferences)) {
+
+            try {
+
+                console.log(`Checking pincode ${pincode}`);
+
+                const page =
+                    await browser.newPage();
+
+                await openProteinPage(page);
+
+                await selectPincode(
+                    page,
+                    pincode
+                );
+
+                const response =
+                    await page.waitForResponse(
+
+                        response =>
+
+                            response.url().includes("ms.products") &&
+
+                            response.status() === 200,
+
+                        {
+                            timeout: 15000
+                        }
+
+                    );
+
+                const data =
+    await response.json();
+
+const activeUsers =
+    groupedPreferences[pincode].users.filter(user => {
+
+        if (!user.notifyUntil) {
+
+            return false;
 
         }
-        try{
 
-        
+        return new Date(user.notifyUntil) > new Date();
 
-        console.log(
-            `Checking ${user.username} (${user.pincode})`
-        );
+    });
+    if (activeUsers.length === 0) {
 
-        const page = await browser.newPage();
+    console.log(`No active users for ${pincode}`);
 
-        await openProteinPage(page);
+    await page.close();
 
-        await selectPincode(
-            page,
-            user.pincode
-        );
+    continue;
 
-        const response =
-            await page.waitForResponse( response =>
+}
 
-        response.url().includes("ms.products") &&
-        response.status() === 200,
-
-    { timeout: 15000 });
-
-        console.log("Products API received");
-
-        const data =
-            await response.json();
-
-        const found =
-            await processProducts(
+productsFound += await processProducts(
 
     data,
 
-    user.products,
+    activeUsers,
 
-    previousStock,
+    stockMap,
 
     sendNotification,
 
-    user.chatId,
+    shouldNotify,
 
-    user.pincode,
-
-    shouldNotify
+    pincode
 
 );
 
-        productsFound += found;
+                await page.close();
 
-        await page.close();
+            }
+
+            catch (err) {
+
+                console.log(
+
+                    `Error checking ${pincode}:`,
+
+                    err.message
+
+                );
+
+            }
+
+        }
+
+        console.log(
+
+            `Products Found: ${productsFound}`
+
+        );
 
     }
+
     catch (err) {
 
-    console.log(
-        `Error checking ${user.username}:`,
-        err.message
-    );
-
-}}
-
-    saveStock(previousStock);
-
-    console.log(`Products Found: ${productsFound}`);
+        console.log(err);
 
     }
-    catch (err) {
 
-        console.log(err.message);
-
-    }
     finally {
 
         await browser.close();
@@ -150,25 +163,26 @@ function startStockChecker() {
 
     setInterval(() => {
 
-        console.log(
-            "\n================================="
-        );
+        console.log("\n=================================");
 
         console.log(
+
             "Checking stock:",
+
             new Date().toLocaleString()
+
         );
 
-        console.log(
-            "=================================\n"
-        );
+        console.log("=================================\n");
 
         checkStock();
 
-    }, 1 * 30 * 1000);
+    }, 1 * 60 * 1000);
 
 }
 
 module.exports = {
+
     startStockChecker
+
 };

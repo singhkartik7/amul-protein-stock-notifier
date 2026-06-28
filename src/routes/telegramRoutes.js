@@ -1,83 +1,140 @@
 const express = require("express");
-const fs = require("fs");
-const path = require("path");
 
 const router = express.Router();
 
-const FILE = path.join(
-    __dirname,
-    "..",
-    "..",
-    "data",
-    "preferences.json"
-);
+const {
+    findUserByUsername
+} = require("../models/userModel");
 
-router.post("/connect", (req, res) => {
+const {
+    getPreferenceByUserId,
+    savePreference
+} = require("../models/preferenceModel");
 
-    const { username, chatId } = req.body;
+router.post("/connect", async (req, res) => {
 
-    const users = JSON.parse(
-        fs.readFileSync(FILE, "utf8")
-    );
+    try {
 
-    const user = users.find(
-        u => u.username === username
-    );
+        const { username, chatId } = req.body;
 
-    if (!user) {
+        const user =
+            await findUserByUsername(username);
 
-        return res.status(404).json({
-            message: "User not found"
+        if (!user) {
+
+            return res.status(404).json({
+
+                message: "User not found"
+
+            });
+
+        }
+
+        const preference =
+            await getPreferenceByUserId(user.id);
+
+        if (!preference) {
+
+            return res.status(404).json({
+
+                message: "Save preferences first"
+
+            });
+
+        }
+
+        await savePreference(
+
+            user.id,
+
+            preference.pincode,
+
+            chatId
+
+        );
+
+        res.json({
+
+            message: "Telegram connected"
+
+        });
+
+    }
+    catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+
+            message: "Server Error"
+
         });
 
     }
 
-    user.chatId = chatId;
-
-    fs.writeFileSync(
-        FILE,
-        JSON.stringify(users, null, 2)
-    );
-
-    res.json({
-        message: "Telegram connected"
-    });
-
 });
 
+router.post("/disconnect", async (req, res) => {
 
-router.post("/disconnect", (req, res) => {
+    try {
 
-    const { username } = req.body;
+        const { username } = req.body;
 
-    const users = JSON.parse(
-        fs.readFileSync(FILE, "utf8")
-    );
+        const user =
+            await findUserByUsername(username);
 
-    const user = users.find(
-        u => u.username === username
-    );
+        if (!user) {
 
-    if (!user) {
+            return res.status(404).json({
 
-        return res.status(404).json({
-            message: "User not found"
+                message: "User not found"
+
+            });
+
+        }
+
+        const preference =
+            await getPreferenceByUserId(user.id);
+
+        if (!preference) {
+
+            return res.status(404).json({
+
+                message: "Preference not found"
+
+            });
+
+        }
+
+        await savePreference(
+
+            user.id,
+
+            preference.pincode,
+
+            null
+
+        );
+
+        res.json({
+
+            message: "Telegram disconnected"
+
+        });
+
+    }
+    catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+
+            message: "Server Error"
+
         });
 
     }
 
-    user.chatId = null;
-
-    fs.writeFileSync(
-        FILE,
-        JSON.stringify(users, null, 2)
-    );
-
-    res.json({
-        message: "Telegram disconnected"
-    });
-
 });
-
 
 module.exports = router;

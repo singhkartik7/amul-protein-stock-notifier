@@ -1,84 +1,181 @@
-# Amul Stock Notifier
+# 🥛 Amul Protein Stock Notifier
 
-A full-stack web application that monitors the availability of Amul High Protein products and sends Telegram notifications when selected products are back in stock.
+A full-stack web application that monitors the availability of Amul High Protein products on the Amul online store and sends real-time Telegram notifications when selected products are restocked.
 
-## Features
+Designed to solve the problem of frequently out-of-stock Amul protein products by automatically checking inventory every few minutes and notifying users instantly.
 
-* User signup and login
-* Product search
-* Multi-product tracking
-* Pincode-based stock monitoring
-* Telegram account integration
-* Real-time stock notifications
-* Disconnect Telegram
-* Reset preferences
-* Delete account
-* Multi-user support
+---
 
-## Tech Stack
+# ✨ Features
 
-### Frontend
+### 👤 User Management
 
-* HTML
-* CSS
-* JavaScript
+- User Signup
+- User Login
+- Delete Account
+- Persistent user preferences
 
-### Backend
+### 📦 Product Tracking
 
-* Node.js
-* Express.js
-* Playwright
-* Telegram Bot API
+- Search products
+- Track multiple products
+- Pincode-based availability
+- Save product preferences
+- Reset tracking preferences
 
-### Database
+### 🔔 Notification System
 
-* JSON (Current)
-* PostgreSQL (Migration in Progress)
+- Telegram Bot Integration
+- Connect / Disconnect Telegram
+- Instant stock notifications
+- Notification duration control
+    - 1 Day
+    - 3 Days
+    - 7 Days
+    - 15 Days
+    - 30 Days
+- Start Notifications
+- Stop Notifications
+- Live notification status
+- Notification expiry countdown
 
-## Project Structure
+### ⚡ Stock Monitoring
 
-```text
-frontend/
-src/
-data/
-```
+- Automatic stock checking
+- Multi-user support
+- Pincode-wise optimization
+- Stock change detection
+- Duplicate notification prevention
 
-## Installation
+---
 
-1. Clone the repository.
+# 🛠 Tech Stack
+
+## Frontend
+
+- HTML5
+- CSS3
+- JavaScript
+
+## Backend
+
+- Node.js
+- Express.js
+- Playwright
+- Telegram Bot API
+
+## Database
+
+- PostgreSQL
+
+---
+
+# 🗄 Database
+
+The application uses PostgreSQL with the following tables:
+
+- users
+- preferences
+- tracked_products
+- stock
+
+---
+
+# 🚀 Installation
+
+## Clone Repository
 
 ```bash
 git clone <repository-url>
 ```
 
-2. Install dependencies.
+## Install Dependencies
 
 ```bash
 npm install
 ```
 
-3. Create a `.env` file.
+## Create Environment Variables
+
+Create a `.env` file.
 
 ```env
-BOT_TOKEN=your_bot_token
+BOT_TOKEN=YOUR_TELEGRAM_BOT_TOKEN
+
+DATABASE_URL=YOUR_POSTGRES_DATABASE_URL
+
 HEADLESS=false
 ```
 
-4. Start the server.
+## Start the Server
 
 ```bash
 node src/server.js
 ```
 
-## Upcoming Improvements
+---
 
-* PostgreSQL migration
-* Password hashing using bcrypt
-* JWT authentication
-* Input validation
-* Notification duration
-* Production deployment
+# 📁 Project Structure
 
-## License
+```
+frontend/
+│
+├── css/
+├── js/
+└── dashboard.html
 
-This project is intended for educational and portfolio purposes.
+src/
+│
+├── models/
+├── routes/
+├── database/
+├── telegramListener.js
+├── index.js
+└── server.js
+
+data/
+└── products.json
+```
+
+---
+
+# ⚙️ How It Works
+
+1. User creates an account.
+2. Connects Telegram.
+3. Saves pincode and products.
+4. Activates notifications for a selected duration.
+5. Playwright checks Amul inventory periodically.
+6. PostgreSQL stores stock history.
+7. Telegram notification is sent whenever stock changes.
+
+---
+
+# 📌 Current Features
+
+- ✅ PostgreSQL backend
+- ✅ Multi-user architecture
+- ✅ Product tracking
+- ✅ Telegram integration
+- ✅ Notification management
+- ✅ Stock history
+- ✅ Responsive dashboard
+
+---
+
+# 🚧 Upcoming Improvements
+
+- Password hashing using bcrypt
+- Change password
+- JWT Authentication
+- Docker support
+- Production deployment
+- Admin dashboard
+- Email notifications
+- Analytics dashboard
+
+---
+
+# 📄 License
+
+This project is developed for educational, portfolio, and personal learning purposes.

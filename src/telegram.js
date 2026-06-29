@@ -5,15 +5,13 @@ const bot = new TelegramBot(process.env.BOT_TOKEN);
 async function sendNotification(chatId, productName, currentStock) {
   try {
     await bot.sendMessage(
-      chatId,
-      `🚨 BACK IN STOCK
+    chatId,
+    `🚨 Amul Stock Alert
 
-Product:
-${productName}
+📦 ${productName}
 
-Inventory:
-${currentStock}`
-    );
+📊 Quantity Available: ${currentStock}`
+);
 
     console.log("Telegram notification sent.");
   } catch (err) {

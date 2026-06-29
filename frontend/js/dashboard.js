@@ -1,192 +1,342 @@
-const username = localStorage.getItem("username");
+// ========================================
+// Authentication
+// ========================================
 
-document.getElementById("welcome").textContent =
-`Welcome, ${username} 👋`;
+const token =
+    localStorage.getItem("token");
+
+const username =
+    localStorage.getItem("username");
+
+if (!token) {
+
+    window.location.href = "index.html";
+
+}
+
+document.getElementById(
+    "welcome"
+).textContent =
+    `Welcome, ${username} 👋`;
+
+
+// ========================================
+// Global State
+// ========================================
 
 let selectedProducts = [];
 
-// Fetch products from backend
 
-async function loadProducts(){
+// ========================================
+// Helper Functions
+// ========================================
 
-    try{
+function getAuthHeaders() {
 
-        const response =
-            await fetch("http://localhost:3001/products");
+    return {
+
+        "Content-Type": "application/json",
+
+        Authorization: `Bearer ${token}`
+
+    };
+
+}
+
+
+function showToast(message) {
+
+    const toast =
+        document.getElementById("toast");
+
+    toast.textContent = message;
+
+    toast.classList.add("show");
+
+    setTimeout(() => {
+
+        toast.classList.remove("show");
+
+    }, 2500);
+
+}
+
+// ========================================
+// Products
+// ========================================
+
+async function loadProducts() {
+
+    try {
+
+        const response = await fetch(
+
+            "http://localhost:3001/products"
+
+        );
+
+        if (!response.ok) {
+
+            throw new Error();
+
+        }
 
         const products =
             await response.json();
 
         const container =
-            document.getElementById("productsContainer");
+            document.getElementById(
+                "productsContainer"
+            );
 
         container.innerHTML = "";
 
-        products.forEach(product=>{
+        products.forEach(product => {
 
-            const card = document.createElement("div");
+            const card =
+                document.createElement("div");
 
-card.className = "productItem";
+            card.className =
+                "productItem";
 
-const checked =
-    selectedProducts.includes(product.name);
+            const isSelected =
+                selectedProducts.includes(
+                    product.id
+                );
 
-if (checked) {
+            if (isSelected) {
 
-    card.classList.add("selected");
+                card.classList.add(
+                    "selected"
+                );
 
-}
+            }
 
-card.innerHTML = `
+            card.innerHTML = `
 
-    <input
-        type="checkbox"
-        ${checked ? "checked" : ""}>
+                <input
+                    type="checkbox"
+                    ${isSelected ? "checked" : ""}>
 
-    <span>${product.name}</span>
+                <span>${product.name}</span>
 
-`;
+            `;
 
-card.addEventListener("click", () => {
+            card.addEventListener("click", () => {
 
-    const checkbox =
-        card.querySelector("input");
+                const checkbox =
+                    card.querySelector("input");
 
-    if (selectedProducts.includes(product.name)) {
+                if (selectedProducts.includes(product.id)) {
 
-        selectedProducts =
-            selectedProducts.filter(
-                p => p !== product.name
+                    selectedProducts =
+                        selectedProducts.filter(
+
+                            id => id !== product.id
+
+                        );
+
+                    checkbox.checked = false;
+
+                    card.classList.remove(
+                        "selected"
+                    );
+
+                }
+
+                else {
+
+                    selectedProducts.push(
+                        product.id
+                    );
+
+                    checkbox.checked = true;
+
+                    card.classList.add(
+                        "selected"
+                    );
+
+                }
+
+            });
+
+            container.appendChild(card);
+
+        });
+
+        const search =
+            document.getElementById(
+                "searchProduct"
             );
 
-        checkbox.checked = false;
+        search.oninput = () => {
 
-        card.classList.remove("selected");
+            const value =
+                search.value.toLowerCase();
 
-    }
-    else {
+            document
+                .querySelectorAll(".productItem")
+                .forEach(card => {
 
-        selectedProducts.push(product.name);
+                    card.style.display =
 
-        checkbox.checked = true;
+                        card.innerText
+                            .toLowerCase()
+                            .includes(value)
 
-        card.classList.add("selected");
+                            ? "flex"
 
-    }
+                            : "none";
 
-});
-            container.appendChild(card);
-        });
-            const search =
-    document.getElementById("searchProduct");
+                });
 
-search.oninput = () => {
-
-    const value =
-        search.value.toLowerCase();
-
-    document
-        .querySelectorAll(".productItem")
-        .forEach(card => {
-
-            const text =
-                card.innerText.toLowerCase();
-
-            card.style.display =
-                text.includes(value)
-                    ? "flex"
-                    : "none";
-
-        });
-
-};
-
-      
+        };
 
     }
-    catch(err){
 
-        alert("Cannot load products.");
+    catch (err) {
 
-        console.log(err);
+        console.error(err);
+
+        showToast(
+
+            "❌ Unable to load products. Please refresh the page."
+
+        );
 
     }
 
 }
+
+// ========================================
+// Preferences
+// ========================================
+
 async function loadPreferences() {
 
-    const response = await fetch(
-        `http://localhost:3001/preferences/${username}`
-    );
+    try {
 
-    const data = await response.json();
+        const response = await fetch(
 
-    if (!data) return;
+            "http://localhost:3001/preferences",
 
-    document.getElementById("pincode").value =
-        data.pincode;
+            {
 
-    selectedProducts = data.products;
-    if (data.chatId) {
+                headers: getAuthHeaders()
 
-    document.getElementById(
-        "telegramStatus"
-    ).textContent =
-        "🟢 Connected";
+            }
 
-    document.getElementById(
-        "telegramBtn"
-    ).textContent =
-        "Reconnect Telegram";
+        );
 
-}
-else {
+        // JWT expired / invalid
+        if (response.status === 401) {
 
-    document.getElementById(
-        "telegramStatus"
-    ).textContent =
-        "🔴 Not Connected";
+            localStorage.clear();
 
-}
-const notificationStatus =
-    document.getElementById(
-        "notificationStatus"
-    );
+            window.location.href = "index.html";
 
-if (!data.notifyUntil) {
+            return;
 
-    notificationStatus.innerHTML =
+        }
 
-        "🔴 Notifications Stopped";
+        const data = await response.json();
 
-}
-else {
+        if (!response.ok) {
 
-    const expiry =
-        new Date(data.notifyUntil);
+            showToast(`❌ ${data.message}`);
 
-    const now =
-        new Date();
+            return;
 
-    if (expiry <= now) {
+        }
 
-        notificationStatus.innerHTML =
+        if (!data) return;
 
-            "🟡 Notifications Expired";
+        // Pincode
+        document.getElementById(
+            "pincode"
+        ).value = data.pincode;
 
-    }
-    else {
+        // Selected Products
+        selectedProducts = data.products;
 
-        const remainingDays =
-            Math.ceil(
+        // ========================================
+        // Telegram Status
+        // ========================================
 
-                (expiry - now) /
-
-                (1000 * 60 * 60 * 24)
-
+        const telegramStatus =
+            document.getElementById(
+                "telegramStatus"
             );
 
-        notificationStatus.innerHTML = `
+        const telegramBtn =
+            document.getElementById(
+                "telegramBtn"
+            );
+
+        if (data.chatId) {
+
+            telegramStatus.textContent =
+                "🟢 Connected";
+
+            telegramBtn.textContent =
+                "Reconnect Telegram";
+
+        }
+
+        else {
+
+            telegramStatus.textContent =
+                "🔴 Not Connected";
+
+            telegramBtn.textContent =
+                "Connect Telegram";
+
+        }
+
+        // ========================================
+        // Notification Status
+        // ========================================
+
+        const notificationStatus =
+            document.getElementById(
+                "notificationStatus"
+            );
+
+        if (!data.notifyUntil) {
+
+            notificationStatus.innerHTML =
+
+                "🔴 Notifications Stopped";
+
+        }
+
+        else {
+
+            const expiry =
+                new Date(data.notifyUntil);
+
+            const now =
+                new Date();
+
+            if (expiry <= now) {
+
+                notificationStatus.innerHTML =
+
+                    "🟡 Notifications Expired";
+
+            }
+
+            else {
+
+                const remainingDays = Math.ceil(
+
+                    (expiry - now) /
+
+                    (1000 * 60 * 60 * 24)
+
+                );
+
+                notificationStatus.innerHTML = `
 
 🟢 <strong>Notifications Active</strong>
 
@@ -216,11 +366,30 @@ ${expiry.toLocaleDateString(
 
 `;
 
+            }
+
+        }
+
+    }
+
+    catch (err) {
+
+        console.error(err);
+
+        showToast(
+
+            "❌ Unable to load your preferences."
+
+        );
+
     }
 
 }
 
-}
+// ========================================
+// Initialization
+// ========================================
+
 async function initialize() {
 
     await loadPreferences();
@@ -231,424 +400,612 @@ async function initialize() {
 
 initialize();
 
-
-function showToast(message){
-
-    const toast =
-        document.getElementById("toast");
-
-    toast.textContent = message;
-
-    toast.classList.add("show");
-
-    setTimeout(() => {
-
-        toast.classList.remove("show");
-
-    }, 2500);
-
-}
+// ========================================
+// Save Preferences
+// ========================================
 
 document
-.getElementById("saveBtn")
-.addEventListener("click", async () => {
+    .getElementById("saveBtn")
+    .addEventListener("click", async () => {
 
-    const pincode =
-        document.getElementById("pincode").value;
+        const pincode =
+            document
+                .getElementById("pincode")
+                .value
+                .trim();
 
-    if (pincode.length !== 6) {
+        if (pincode.length !== 6) {
 
-        showToast("❌ Enter a valid 6-digit pincode");
+            showToast(
+                "❌ Enter a valid 6-digit pincode."
+            );
 
-        return;
-
-    }
-
-    if (selectedProducts.length === 0) {
-
-        showToast("❌ Select at least one product");
-
-        return;
-
-    }
-
-    const saveBtn =
-        document.getElementById("saveBtn");
-
-    saveBtn.disabled = true;
-
-    saveBtn.textContent = "Saving...";
-
-    try {
-
-        const response = await fetch(
-            "http://localhost:3001/preferences",
-            {
-                method: "POST",
-
-                headers: {
-                    "Content-Type": "application/json"
-                },
-
-                body: JSON.stringify({
-                    username,
-                    pincode,
-                    selectedProducts
-                })
-            }
-        );
-
-        if (!response.ok) {
-
-            throw new Error("Failed to save.");
+            return;
 
         }
 
-        showToast("✅ Preferences Saved");
+        if (selectedProducts.length === 0) {
 
-    }
-    catch (err) {
+            showToast(
+                "❌ Select at least one product."
+            );
 
-        console.log(err);
-
-        showToast("❌ Failed to save");
-
-    }
-    finally {
-
-        saveBtn.disabled = false;
-
-        saveBtn.textContent = "Save Preferences";
-
-    }
-
-});
-document
-.getElementById("activateNotificationBtn")
-.addEventListener("click", async () => {
-
-    const pincode =
-        document.getElementById("pincode").value;
-
-    if (pincode.length !== 6) {
-
-        showToast("❌ Save your pincode first");
-
-        return;
-
-    }
-
-    if (selectedProducts.length === 0) {
-
-        showToast("❌ Select at least one product");
-
-        return;
-
-    }
-
-    const days = Number(
-
-        document.getElementById(
-
-            "notifyDays"
-
-        ).value
-
-    );
-
-    try {
-
-        const response = await fetch(
-
-            "http://localhost:3001/preferences/notifications/start",
-
-            {
-
-                method: "POST",
-
-                headers: {
-
-                    "Content-Type": "application/json"
-
-                },
-
-                body: JSON.stringify({
-
-                    username,
-
-                    days
-
-                })
-
-            }
-
-        );
-
-        if (!response.ok) {
-
-            throw new Error();
+            return;
 
         }
 
-        showToast(
-    "🟢 Notifications Activated"
-);
+        const saveBtn =
+            document.getElementById("saveBtn");
 
-await loadPreferences();
+        saveBtn.disabled = true;
 
-    }
+        saveBtn.textContent = "Saving...";
 
-    catch (err) {
+        try {
 
-        console.log(err);
+            const response = await fetch(
 
-        showToast(
+                "http://localhost:3001/preferences",
 
-            "❌ Failed to activate notifications"
+                {
 
-        );
+                    method: "POST",
 
-    }
+                    headers: getAuthHeaders(),
 
-});
+                    body: JSON.stringify({
 
-document
-.getElementById("stopNotificationBtn")
-.addEventListener("click", async () => {
+                        pincode,
 
-    try {
+                        selectedProducts
 
-        const response = await fetch(
+                    })
 
-            "http://localhost:3001/preferences/notifications/stop",
+                }
 
-            {
+            );
 
-                method: "POST",
+            const data =
+                await response.json();
 
-                headers: {
+            if (!response.ok) {
 
-                    "Content-Type": "application/json"
+                showToast(
 
-                },
+                    `❌ ${data.message}`
 
-                body: JSON.stringify({
+                );
 
-                    username
-
-                })
+                return;
 
             }
 
-        );
+            showToast(
 
-        if (!response.ok) {
+                "✅ Preferences saved successfully."
 
-            throw new Error();
+            );
+
+            await loadPreferences();
 
         }
 
-       showToast(
-    "🔴 Notifications Stopped"
-);
+        catch (err) {
 
-await loadPreferences();
+            console.error(err);
 
-    }
+            showToast(
 
-    catch (err) {
+                "❌ Unable to save preferences. Please try again."
 
-        console.log(err);
+            );
 
-        showToast(
+        }
 
-            "❌ Failed to stop notifications"
+        finally {
 
-        );
+            saveBtn.disabled = false;
 
-    }
+            saveBtn.textContent =
+                "Save Preferences";
 
-});
-document
-.getElementById("logoutBtn")
-.addEventListener("click",()=>{
+        }
 
-    localStorage.clear();
+    });
 
-    window.location.href="login.html";
-
-});
+// ========================================
+// Activate Notifications
+// ========================================
 
 document
-.getElementById("telegramBtn")
-.addEventListener("click",()=>{
+    .getElementById("activateNotificationBtn")
+    .addEventListener("click", async () => {
 
-    window.open(
+        const pincode =
+            document
+                .getElementById("pincode")
+                .value
+                .trim();
 
-        `https://t.me/Amul_Protein_Stock_Notifier_Bot?start=${username}`,
+        if (pincode.length !== 6) {
 
-        "_blank"
+            showToast(
+                "❌ Please save your pincode first."
+            );
 
-    );
+            return;
 
-    let attempts = 0;
+        }
 
-    const interval = setInterval(async () => {
+        if (selectedProducts.length === 0) {
 
-        attempts++;
+            showToast(
+                "❌ Please select at least one product."
+            );
 
-        await loadPreferences();
+            return;
 
-        if (
+        }
+
+        const days = Number(
 
             document
-                .getElementById("telegramStatus")
-                .textContent
-                .includes("Connected")
+                .getElementById("notifyDays")
+                .value
 
-        ) {
+        );
 
-            clearInterval(interval);
+        try {
 
-            showToast("✅ Telegram Connected");
+            const response = await fetch(
+
+                "http://localhost:3001/preferences/notifications/start",
+
+                {
+
+                    method: "POST",
+
+                    headers: getAuthHeaders(),
+
+                    body: JSON.stringify({
+
+                        days
+
+                    })
+
+                }
+
+            );
+
+            const data =
+                await response.json();
+
+            if (!response.ok) {
+
+                showToast(
+
+                    `❌ ${data.message}`
+
+                );
+
+                return;
+
+            }
+
+            showToast(
+
+                "✅ Notifications enabled."
+
+            );
+
+            await loadPreferences();
 
         }
 
-        if (attempts >= 15) {
+        catch (err) {
 
-            clearInterval(interval);
+            console.error(err);
+
+            showToast(
+
+                "❌ Unable to activate notifications."
+
+            );
 
         }
 
-    }, 2000);
+    });
 
-});
+
+// ========================================
+// Stop Notifications
+// ========================================
 
 document
-.getElementById("disconnectTelegramBtn")
-.addEventListener("click", async () => {
+    .getElementById("stopNotificationBtn")
+    .addEventListener("click", async () => {
 
-    await fetch(
-        "http://localhost:3001/telegram/disconnect",
-        {
+        try {
 
-            method:"POST",
+            const response = await fetch(
 
-            headers:{
-                "Content-Type":"application/json"
-            },
+                "http://localhost:3001/preferences/notifications/stop",
 
-            body:JSON.stringify({
+                {
 
-                username
+                    method: "POST",
 
-            })
+                    headers: getAuthHeaders()
+
+                }
+
+            );
+
+            const data =
+                await response.json();
+
+            if (!response.ok) {
+
+                showToast(
+
+                    `❌ ${data.message}`
+
+                );
+
+                return;
+
+            }
+
+            showToast(
+
+                "✅ Notifications disabled."
+
+            );
+
+            await loadPreferences();
 
         }
-    );
 
-    
+        catch (err) {
 
-    showToast("✅ Telegram disconnected.");
-    document.getElementById(
-    "telegramStatus"
-).textContent =
-    "🔴 Not Connected";
+            console.error(err);
 
-document.getElementById(
-    "telegramBtn"
-).textContent =
-    "Connect Telegram";
+            showToast(
 
-});
+                "❌ Unable to stop notifications."
+
+            );
+
+        }
+
+    });
+
+
+// ========================================
+// Logout
+// ========================================
 
 document
-.getElementById("resetBtn")
-.addEventListener("click",async()=>{
+    .getElementById("logoutBtn")
+    .addEventListener("click", () => {
 
-    if(
-        !confirm(
+        localStorage.clear();
+
+        window.location.href = "index.html";
+
+    });
+
+// ========================================
+// Connect Telegram
+// ========================================
+
+document
+    .getElementById("telegramBtn")
+    .addEventListener("click", () => {
+
+        window.open(
+
+            `https://t.me/Amul_Protein_Stock_Notifier_Bot?start=${username}`,
+
+            "_blank"
+
+        );
+
+        let attempts = 0;
+
+        const interval = setInterval(async () => {
+
+            attempts++;
+
+            await loadPreferences();
+
+            const telegramStatus =
+
+                document.getElementById(
+                    "telegramStatus"
+                );
+
+            if (
+
+                telegramStatus.textContent.includes(
+                    "Connected"
+                )
+
+            ) {
+
+                clearInterval(interval);
+
+                showToast(
+
+                    "✅ Telegram connected."
+
+                );
+
+                return;
+
+            }
+
+            if (attempts >= 15) {
+
+                clearInterval(interval);
+
+                showToast(
+
+                    "❌ Telegram connection timed out."
+
+                );
+
+            }
+
+        }, 2000);
+
+    });
+
+// ========================================
+// Disconnect Telegram
+// ========================================
+
+document
+    .getElementById("disconnectTelegramBtn")
+    .addEventListener("click", async () => {
+
+        try {
+
+            const response = await fetch(
+
+                "http://localhost:3001/telegram/disconnect",
+
+                {
+
+                    method: "POST",
+
+                    headers: getAuthHeaders()
+
+                }
+
+            );
+
+            const data =
+                await response.json();
+
+            if (!response.ok) {
+
+                showToast(
+
+                    `❌ ${data.message}`
+
+                );
+
+                return;
+
+            }
+
+            document.getElementById(
+
+                "telegramStatus"
+
+            ).textContent =
+
+                "🔴 Not Connected";
+
+            document.getElementById(
+
+                "telegramBtn"
+
+            ).textContent =
+
+                "Connect Telegram";
+
+            showToast(
+
+                "✅ Telegram disconnected."
+
+            );
+
+        }
+
+        catch (err) {
+
+            console.error(err);
+
+            showToast(
+
+                "❌ Unable to disconnect Telegram."
+
+            );
+
+        }
+
+    });
+
+// ========================================
+// Reset Preferences
+// ========================================
+
+document
+    .getElementById("resetBtn")
+    .addEventListener("click", async () => {
+
+        const confirmed = confirm(
+
             "Reset all preferences?"
-        )
-    ) return;
 
-    await fetch(
-        "http://localhost:3001/preferences/reset",
-        {
+        );
 
-            method:"POST",
+        if (!confirmed) {
 
-            headers:{
-                "Content-Type":"application/json"
-            },
-
-            body:JSON.stringify({
-
-                username
-
-            })
+            return;
 
         }
-    );
 
-   selectedProducts = [];
+        try {
 
-document.getElementById("pincode").value = "";
+            const response = await fetch(
 
-await loadProducts();
+                "http://localhost:3001/preferences/reset",
 
-showToast("✅ Preferences Reset");
-document.getElementById(
-    "saveBtn"
-).disabled = false;
+                {
 
-});
+                    method: "POST",
+
+                    headers: getAuthHeaders()
+
+                }
+
+            );
+
+            const data =
+                await response.json();
+
+            if (!response.ok) {
+
+                showToast(
+
+                    `❌ ${data.message}`
+
+                );
+
+                return;
+
+            }
+
+            selectedProducts = [];
+
+            document.getElementById(
+
+                "pincode"
+
+            ).value = "";
+
+            await loadPreferences();
+
+            await loadProducts();
+
+            showToast(
+
+                "✅ Preferences reset successfully."
+
+            );
+
+        }
+
+        catch (err) {
+
+            console.error(err);
+
+            showToast(
+
+                "❌ Unable to reset preferences."
+
+            );
+
+        }
+
+    });
+
+// ========================================
+// Delete Account
+// ========================================
 
 document
-.getElementById("deleteBtn")
-.addEventListener("click",async()=>{
+    .getElementById("deleteBtn")
+    .addEventListener("click", async () => {
 
-    const ok=confirm(
+        const confirmed = confirm(
 
-        "Delete your account permanently?"
+            "Delete your account permanently?"
 
-    );
+        );
 
-    if(!ok) return;
+        if (!confirmed) {
 
-    const response = await fetch(
-
-        "http://localhost:3001/auth/delete",
-
-        {
-
-            method:"DELETE",
-
-            headers:{
-
-                "Content-Type":"application/json"
-
-            },
-
-            body:JSON.stringify({
-
-                username
-
-            })
+            return;
 
         }
 
-    );
-    if (!response.ok) {
+        try {
 
-    showToast("❌ Failed to delete account");
+            const response = await fetch(
 
-    return;
+                "http://localhost:3001/auth/delete",
 
-}
+                {
 
-    localStorage.clear();
+                    method: "DELETE",
 
-    window.location.href="login.html";
+                    headers: getAuthHeaders()
 
-});
+                }
+
+            );
+
+            const data =
+                await response.json();
+
+            if (!response.ok) {
+
+                showToast(
+
+                    `❌ ${data.message}`
+
+                );
+
+                return;
+
+            }
+
+            showToast(
+
+                "✅ Account deleted successfully."
+
+            );
+
+            localStorage.clear();
+
+            setTimeout(() => {
+
+                window.location.href = "index.html";
+
+            }, 1000);
+
+        }
+
+        catch (err) {
+
+            console.error(err);
+
+            showToast(
+
+                "❌ Unable to delete your account."
+
+            );
+
+        }
+
+    });
+
+
+
+
+
+

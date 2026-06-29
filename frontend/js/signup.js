@@ -31,7 +31,7 @@ signupBtn.addEventListener("click", async () => {
         if (response.ok) {
             alert(data.message);
             setTimeout(function () {
-                window.location.href = "login.html";
+                window.location.href = "index.html";
             }, 0);
         } else {
             alert(data.message || "Signup failed. Please try again.");

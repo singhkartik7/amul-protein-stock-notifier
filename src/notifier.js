@@ -20,7 +20,7 @@ async function shouldNotify(
 
     const key =
 
-        `${pincode}|${product.name}`;
+        `${pincode}|${product._id}`;
 
     const currentStock =
 
@@ -70,7 +70,7 @@ async function shouldNotify(
 
     await saveStock(
 
-        product.name,
+        product._id,
 
         pincode,
 

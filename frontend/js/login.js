@@ -9,45 +9,78 @@ loginBtn.addEventListener("click", async () => {
         document.getElementById("password").value;
 
     if (!username || !password) {
+
         alert("Please fill all fields.");
+
         return;
+
     }
 
     try {
 
         const response = await fetch(
+
             "http://localhost:3001/auth/login",
+
             {
+
                 method: "POST",
 
                 headers: {
-                    "Content-Type":"application/json"
+
+                    "Content-Type": "application/json"
+
                 },
 
                 body: JSON.stringify({
+
                     username,
+
                     password
+
                 })
 
             }
+
         );
 
         const data = await response.json();
 
+        if (!response.ok) {
+
+            alert(data.message);
+
+            return;
+
+        }
+
+        localStorage.setItem(
+
+            "username",
+
+            username
+
+        );
+
+        localStorage.setItem(
+
+            "token",
+
+            data.token
+
+        );
+
         alert(data.message);
 
-        if(response.ok){
-
-    localStorage.setItem("username", username);
-
-    window.location.href = "dashboard.html";
-
-}
+        window.location.href = "dashboard.html";
 
     }
-    catch(err){
 
-        alert(err.message);
+    catch (err) {
+
+        console.error(err);
+
+        alert("Unable to login.");
 
     }
 

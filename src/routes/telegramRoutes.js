@@ -1,6 +1,7 @@
 const express = require("express");
 
 const router = express.Router();
+const auth = require("../middleware/auth");
 
 const {
     findUserByUsername
@@ -37,7 +38,7 @@ router.post("/connect", async (req, res) => {
 
             return res.status(404).json({
 
-                message: "Save preferences first"
+                message: "Please save your preferences first."
 
             });
 
@@ -55,7 +56,7 @@ router.post("/connect", async (req, res) => {
 
         res.json({
 
-            message: "Telegram connected"
+            message: "Telegram connected successfully."
 
         });
 
@@ -74,11 +75,11 @@ router.post("/connect", async (req, res) => {
 
 });
 
-router.post("/disconnect", async (req, res) => {
+router.post("/disconnect", auth, async (req, res) => {
 
     try {
 
-        const { username } = req.body;
+        const username = req.user.username;
 
         const user =
             await findUserByUsername(username);
@@ -118,7 +119,7 @@ router.post("/disconnect", async (req, res) => {
 
         res.json({
 
-            message: "Telegram disconnected"
+            message: "Telegram disconnected successfully."
 
         });
 

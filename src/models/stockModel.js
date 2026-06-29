@@ -1,6 +1,6 @@
 const pool = require("../database/db");
 
-async function getStock(productName, pincode) {
+async function getStock(productId, pincode) {
 
     const result = await pool.query(
 
@@ -8,13 +8,13 @@ async function getStock(productName, pincode) {
 
          FROM stock
 
-         WHERE product_name = $1
+         WHERE product_id = $1
 
          AND pincode = $2`,
 
         [
 
-            productName,
+            productId,
 
             pincode
 
@@ -28,7 +28,7 @@ async function getStock(productName, pincode) {
 
 async function saveStock(
 
-    productName,
+    productId,
 
     pincode,
 
@@ -40,7 +40,7 @@ async function saveStock(
 
         await getStock(
 
-            productName,
+            productId,
 
             pincode
 
@@ -54,7 +54,7 @@ async function saveStock(
 
              SET last_stock = $1
 
-             WHERE product_name = $2
+             WHERE product_id = $2
 
              AND pincode = $3`,
 
@@ -62,7 +62,7 @@ async function saveStock(
 
                 lastStock,
 
-                productName,
+                productId,
 
                 pincode
 
@@ -80,7 +80,7 @@ async function saveStock(
 
             (
 
-                product_name,
+                product_id,
 
                 pincode,
 
@@ -102,7 +102,7 @@ async function saveStock(
 
             [
 
-                productName,
+                productId,
 
                 pincode,
 
@@ -135,7 +135,7 @@ async function loadStockMap() {
     const result = await pool.query(
 
         `SELECT
-            product_name,
+            product_id,
             pincode,
             last_stock
          FROM stock`
@@ -148,7 +148,7 @@ async function loadStockMap() {
 
         stockMap.set(
 
-            `${row.pincode}|${row.product_name}`,
+            `${row.pincode}|${row.product_id}`,
 
             row.last_stock
 

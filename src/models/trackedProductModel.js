@@ -14,20 +14,44 @@ async function deleteTrackedProducts(preferenceId) {
 }
 
 async function addTrackedProducts(
+
     preferenceId,
-    products
+
+    productIds
+
 ) {
 
-    for (const product of products) {
+    for (const productId of productIds) {
 
         await pool.query(
 
             `INSERT INTO tracked_products
-            (preference_id, product_name)
 
-            VALUES ($1, $2)`,
+            (
 
-            [preferenceId, product]
+                preference_id,
+
+                product_id
+
+            )
+
+            VALUES
+
+            (
+
+                $1,
+
+                $2
+
+            )`,
+
+            [
+
+                preferenceId,
+
+                productId
+
+            ]
 
         );
 
@@ -36,46 +60,64 @@ async function addTrackedProducts(
 }
 
 async function getTrackedProducts(
+
     preferenceId
+
 ) {
 
     const result = await pool.query(
 
-        `SELECT product_name
+        `SELECT
+
+            product_id
 
         FROM tracked_products
 
         WHERE preference_id = $1`,
 
-        [preferenceId]
+        [
+
+            preferenceId
+
+        ]
 
     );
 
     return result.rows.map(
-        row => row.product_name
+
+        row => row.product_id
+
     );
 
 }
 
 async function getProductsForPreference(
+
     preferenceId
+
 ) {
 
     const result = await pool.query(
 
-        `SELECT product_name
+        `SELECT
+
+            product_id
 
         FROM tracked_products
 
         WHERE preference_id = $1`,
 
-        [preferenceId]
+        [
+
+            preferenceId
+
+        ]
 
     );
 
     return result.rows.map(
 
-        row => row.product_name
+        row => row.product_id
 
     );
 

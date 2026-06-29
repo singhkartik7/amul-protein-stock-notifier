@@ -114,25 +114,35 @@ async function getAllPreferences() {
 async function getGroupedPreferences() {
 
     const result = await pool.query(`
+SELECT
 
-        SELECT
-            preferences.pincode,
-preferences.chat_id,
-preferences.notify_until,
-users.username,
-tracked_products.product_name
+    preferences.pincode,
 
-        FROM preferences
+    preferences.chat_id,
 
-        JOIN users
-            ON users.id = preferences.user_id
+    preferences.notify_until,
 
-        LEFT JOIN tracked_products
-            ON tracked_products.preference_id = preferences.id
+    users.username,
 
-        WHERE preferences.chat_id IS NOT NULL
+    products.product_name
 
-        ORDER BY preferences.pincode
+FROM preferences
+
+JOIN users
+
+    ON users.id = preferences.user_id
+
+LEFT JOIN tracked_products
+
+    ON tracked_products.preference_id = preferences.id
+
+LEFT JOIN products
+
+    ON products.id = tracked_products.product_id
+
+WHERE preferences.chat_id IS NOT NULL
+
+ORDER BY preferences.pincode
 
     `);
 
@@ -158,15 +168,15 @@ tracked_products.product_name
 
             user = {
 
-    username: row.username,
+                username: row.username,
 
-    chatId: row.chat_id,
+                chatId: row.chat_id,
 
-    notifyUntil: row.notify_until,
+                notifyUntil: row.notify_until,
 
-    products: []
+                products: []
 
-};
+            };
 
             grouped[row.pincode].users.push(user);
 

@@ -1,7 +1,7 @@
 const express = require("express");
 
 const router = express.Router();
-
+const auth = require("../middleware/auth");
 const {
     findUserByUsername
 } = require("../models/userModel");
@@ -19,19 +19,44 @@ const {
     getTrackedProducts
 } = require("../models/trackedProductModel");
 
-router.post("/", async (req, res) => {
+// ========================================
+// Helper Functions
+// ========================================
+
+async function getAuthenticatedUser(req, res) {
+
+    const username = req.user.username;
+
+    const user = await findUserByUsername(username);
+
+    if (!user) {
+
+        res.status(404).json({
+
+            message: "User not found"
+
+        });
+
+        return null;
+
+    }
+
+    return user;
+
+}
+
+router.post("/", auth, async (req, res) => {
 
     try {
 
         const {
-
-            username,
 
             pincode,
 
             selectedProducts
 
         } = req.body;
+const username = req.user.username;
 
         const user =
             await findUserByUsername(username);
@@ -98,16 +123,14 @@ router.post("/", async (req, res) => {
 
 });
 
-router.get("/:username", async (req, res) => {
+router.get("/", auth, async (req, res) => {
 
     try {
 
-        const user =
-            await findUserByUsername(
+        const username = req.user.username;
 
-                req.params.username
-
-            );
+const user =
+    await findUserByUsername(username);
 
         if (!user) {
 
@@ -135,23 +158,23 @@ router.get("/:username", async (req, res) => {
 
             );
 
-       res.json({
+        res.json({
 
-    username:
-        user.username,
+            username:
+                user.username,
 
-    pincode:
-        preference.pincode,
+            pincode:
+                preference.pincode,
 
-    products,
+            products,
 
-    chatId:
-        preference.chat_id,
+            chatId:
+                preference.chat_id,
 
-    notifyUntil:
-        preference.notify_until
+            notifyUntil:
+                preference.notify_until
 
-});
+        });
 
     }
     catch (err) {
@@ -169,17 +192,17 @@ router.get("/:username", async (req, res) => {
 
 });
 
-router.post("/reset", async (req, res) => {
+router.post("/reset", auth, async (req, res) => {
 
     try {
 
-        const { username } =
-            req.body;
+        const username = req.user.username;
 
-        const user =
-            await findUserByUsername(
-                username
-            );
+const user =
+    await findUserByUsername(
+        username
+    );
+
 
         if (!user) {
 
@@ -223,6 +246,11 @@ router.post("/reset", async (req, res) => {
             preference.id
 
         );
+        await stopNotifications(
+
+            user.id
+
+        );
 
         res.json({
 
@@ -247,20 +275,18 @@ router.post("/reset", async (req, res) => {
 
 });
 
-router.post("/notifications/start", async (req, res) => {
+router.post("/notifications/start", auth, async (req, res) => {
 
     try {
 
-        const {
+        const { days } = req.body;
 
-            username,
+const username = req.user.username;
 
-            days
-
-        } = req.body;
-
-        const user =
-            await findUserByUsername(username);
+const user =
+    await findUserByUsername(
+        username
+    );
 
         if (!user) {
 
@@ -271,7 +297,43 @@ router.post("/notifications/start", async (req, res) => {
             });
 
         }
+        const preference =
+    await getPreferenceByUserId(user.id);
 
+if (!preference || !preference.pincode) {
+
+    return res.status(400).json({
+
+        message: "Please save your preferences before enabling notifications."
+
+    });
+
+}
+
+if (!preference.chat_id) {
+
+    return res.status(400).json({
+
+        message: "Please connect your Telegram account first."
+
+    });
+
+}
+
+const products =
+    await getTrackedProducts(
+        preference.id
+    );
+
+if (products.length === 0) {
+
+    return res.status(400).json({
+
+        message: "Please save your preferences before enabling notifications."
+
+    });
+
+}
         const notifyUntil = new Date(
 
             Date.now() +
@@ -311,18 +373,16 @@ router.post("/notifications/start", async (req, res) => {
 });
 
 
-router.post("/notifications/stop", async (req, res) => {
+router.post("/notifications/stop", auth, async (req, res) => {
 
     try {
 
-        const {
+        const username = req.user.username;
 
-            username
-
-        } = req.body;
-
-        const user =
-            await findUserByUsername(username);
+const user =
+    await findUserByUsername(
+        username
+    );
 
         if (!user) {
 

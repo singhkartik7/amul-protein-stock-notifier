@@ -1,18 +1,46 @@
 const express = require("express");
-const fs = require("fs");
 
 const router = express.Router();
+const {
 
-router.get("/", (req, res) => {
+    getAllProducts
 
-  const products = JSON.parse(
-    fs.readFileSync(
-      "data/products.json",
-      "utf8"
-    )
-  );
+} = require("../models/productModel");
 
-  res.json(products);
+router.get("/", async (req, res) => {
+
+    try {
+
+        const products =
+            await getAllProducts();
+
+        res.json(
+
+            products.map(product => ({
+
+                id: product.id,
+
+                name: product.product_name,
+
+                price: Number(product.price)
+
+            }))
+
+        );
+
+    }
+
+    catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({
+
+            message: "Server Error"
+
+        });
+
+    }
 
 });
 

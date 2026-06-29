@@ -41,9 +41,40 @@ async function checkStock() {
         const stockMap =
             await loadStockMap();
 
+        const activeGroupedPreferences = {};
+
+        for (const [pincode, group] of Object.entries(groupedPreferences)) {
+
+            const activeUsers = group.users.filter(user =>
+
+                user.notifyUntil &&
+                new Date(user.notifyUntil) > new Date()
+
+            );
+
+            if (activeUsers.length > 0) {
+
+                activeGroupedPreferences[pincode] = {
+
+                    users: activeUsers
+
+                };
+
+            }
+
+        }
+
         let productsFound = 0;
 
-        for (const pincode of Object.keys(groupedPreferences)) {
+        for (const pincode of Object.keys(activeGroupedPreferences)) {
+
+            if (!pincode || pincode.trim() === "") {
+
+                console.log("Skipping empty pincode");
+
+                continue;
+
+            }
 
             try {
 
@@ -75,45 +106,24 @@ async function checkStock() {
                     );
 
                 const data =
-    await response.json();
+                    await response.json();
 
-const activeUsers =
-    groupedPreferences[pincode].users.filter(user => {
 
-        if (!user.notifyUntil) {
+                productsFound += await processProducts(
 
-            return false;
+                    data,
 
-        }
+                    activeGroupedPreferences[pincode].users,
 
-        return new Date(user.notifyUntil) > new Date();
+                    stockMap,
 
-    });
-    if (activeUsers.length === 0) {
+                    sendNotification,
 
-    console.log(`No active users for ${pincode}`);
+                    shouldNotify,
 
-    await page.close();
+                    pincode
 
-    continue;
-
-}
-
-productsFound += await processProducts(
-
-    data,
-
-    activeUsers,
-
-    stockMap,
-
-    sendNotification,
-
-    shouldNotify,
-
-    pincode
-
-);
+                );
 
                 await page.close();
 

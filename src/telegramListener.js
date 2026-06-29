@@ -33,13 +33,13 @@ bot.onText(/^\/start(?:\s+(.+))?$/, async (msg, match) => {
 
     try {
 
-       await axios.post(
-    `${API_URL}/telegram/connect`,
-    {
-        username,
-        chatId
-    }
-);
+        await axios.post(
+            `${API_URL}/telegram/connect`,
+            {
+                username,
+                chatId
+            }
+        );
 
         bot.sendMessage(
             chatId,
@@ -47,7 +47,7 @@ bot.onText(/^\/start(?:\s+(.+))?$/, async (msg, match) => {
         );
 
     }
-    catch(err){
+    catch (err) {
 
         console.log(err.message);
 

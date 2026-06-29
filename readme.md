@@ -63,6 +63,10 @@ Designed to solve the problem of frequently out-of-stock Amul protein products b
 - Express.js
 - Playwright
 - Telegram Bot API
+- JWT Authentication
+- bcrypt
+- Helmet
+- Express Rate Limit
 
 ## Database
 
@@ -160,14 +164,17 @@ data/
 - ✅ Notification management
 - ✅ Stock history
 - ✅ Responsive dashboard
+- ✅ JWT Authentication
+- ✅ Password Hashing (bcrypt)
+- ✅ Protected API Routes
+- ✅ Rate Limiting
+- ✅ Security Headers (Helmet)
 
 ---
 
 # 🚧 Upcoming Improvements
 
-- Password hashing using bcrypt
 - Change password
-- JWT Authentication
 - Docker support
 - Production deployment
 - Admin dashboard

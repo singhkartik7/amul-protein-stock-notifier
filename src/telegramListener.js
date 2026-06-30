@@ -9,7 +9,7 @@ const bot = new TelegramBot(
         polling: true
     }
 );
-const API_URL = "http://localhost:3001";
+const API_URL = process.env.API_URL;
 bot.onText(/^\/start(?:\s+(.+))?$/, async (msg, match) => {
 
     const chatId = msg.chat.id;

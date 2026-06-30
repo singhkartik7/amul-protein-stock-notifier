@@ -1,0 +1,1 @@
+const API_URL = "https://amul-stock-backend.onrender.com";

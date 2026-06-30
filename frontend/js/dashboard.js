@@ -71,7 +71,7 @@ async function loadProducts() {
 
         const response = await fetch(
 
-            "http://localhost:3001/products"
+            `${API_URL}/products`
 
         );
 
@@ -218,7 +218,7 @@ async function loadPreferences() {
 
         const response = await fetch(
 
-            "http://localhost:3001/preferences",
+            `${API_URL}/preferences`,
 
             {
 
@@ -445,7 +445,7 @@ document
 
             const response = await fetch(
 
-                "http://localhost:3001/preferences",
+                `${API_URL}/preferences`,
 
                 {
 
@@ -559,7 +559,7 @@ document
 
             const response = await fetch(
 
-                "http://localhost:3001/preferences/notifications/start",
+                `${API_URL}/preferences/notifications/start`,
 
                 {
 
@@ -629,7 +629,7 @@ document
 
             const response = await fetch(
 
-                "http://localhost:3001/preferences/notifications/stop",
+                `${API_URL}/preferences/notifications/stop`,
 
                 {
 
@@ -773,7 +773,7 @@ document
 
             const response = await fetch(
 
-                "http://localhost:3001/telegram/disconnect",
+                `${API_URL}/telegram/disconnect`,
 
                 {
 
@@ -862,7 +862,7 @@ document
 
             const response = await fetch(
 
-                "http://localhost:3001/preferences/reset",
+                `${API_URL}/preferences/reset`,
 
                 {
 
@@ -947,7 +947,7 @@ document
 
             const response = await fetch(
 
-                "http://localhost:3001/auth/delete",
+                `${API_URL}/auth/delete`,
 
                 {
 

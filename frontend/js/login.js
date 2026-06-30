@@ -20,7 +20,7 @@ loginBtn.addEventListener("click", async () => {
 
         const response = await fetch(
 
-            "http://localhost:3001/auth/login",
+            `${API_URL}/auth/login`,
 
             {
 

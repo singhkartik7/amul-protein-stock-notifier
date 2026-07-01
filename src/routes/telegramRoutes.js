@@ -4,28 +4,116 @@ const router = express.Router();
 const auth = require("../middleware/auth");
 
 const {
-    findUserByUsername
+
+    findUserByEmail,
+
+    findUserByTelegramToken,
+
+    saveTelegramToken,
+
+    generateTelegramToken
+
 } = require("../models/userModel");
 
 const {
     getPreferenceByUserId,
     savePreference
 } = require("../models/preferenceModel");
+// ========================================
+// Telegram Link
+// ========================================
 
+router.get(
+
+    "/link",
+
+    auth,
+
+    async (req, res) => {
+
+        try {
+
+            const email =
+
+                req.user.email;
+
+            const user =
+
+                await findUserByEmail(
+
+                    email
+
+                );
+
+            if (!user) {
+
+                return res.status(404).json({
+
+                    message: "User not found"
+
+                });
+
+            }
+
+            let token =
+
+                user.telegram_token;
+
+            if (!token) {
+
+                token =
+
+                    generateTelegramToken();
+
+                await saveTelegramToken(
+
+                    user.id,
+
+                    token
+
+                );
+
+            }
+
+            res.json({
+
+                link:
+
+`https://t.me/Amul_Protein_Stock_Notifier_Bot?start=${token}`
+
+            });
+
+        }
+
+        catch (err) {
+
+            console.log(err);
+
+            res.status(500).json({
+
+                message: "Server Error"
+
+            });
+
+        }
+
+    }
+
+);
 router.post("/connect", async (req, res) => {
 
     try {
 
-        const { username, chatId } = req.body;
+       const { token, chatId } = req.body;
 
-        const user =
-            await findUserByUsername(username);
+const user =
+    await findUserByTelegramToken(token);
 
         if (!user) {
 
             return res.status(404).json({
 
-                message: "User not found"
+                message: "Invalid Telegram Link"
 
             });
 
@@ -79,10 +167,10 @@ router.post("/disconnect", auth, async (req, res) => {
 
     try {
 
-        const username = req.user.username;
+        const email = req.user.email;
 
         const user =
-            await findUserByUsername(username);
+            await findUserByEmail(email);
 
         if (!user) {
 

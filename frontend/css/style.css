@@ -1320,7 +1320,27 @@ footer p{
 
     .navbar .container{
 
-        height:72px;
+    height:72px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:12px;
+
+    }
+
+    .logo{
+
+        flex:1;
+
+        min-width:0;
+
+        gap:8px;
+
+        font-size:1.15rem;
 
     }
 
@@ -1329,6 +1349,26 @@ footer p{
         display:none;
 
     }
+
+    .nav-buttons{
+
+        display:flex;
+
+        gap:10px;
+
+        flex-shrink:0;
+
+    }
+
+    .nav-buttons .btn{
+
+        width:auto;
+
+        padding:12px 18px;
+
+        font-size:.9rem;
+
+    }   
 
     .hero-buttons{
 
@@ -1401,7 +1441,27 @@ footer p{
         padding:25px;
 
     }
+    .logo{
 
+        font-size:1rem;
+
+    }
+
+    .nav-buttons{
+
+        gap:8px;
+
+    }
+
+    .nav-buttons .btn{
+
+        width:auto;
+
+        padding:10px 14px;
+
+        font-size:.82rem;
+
+    }
 }
 /* =====================================================
    LOGIN PAGE

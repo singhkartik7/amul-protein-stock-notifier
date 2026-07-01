@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 const auth = require("../middleware/auth");
 const {
-    findUserByUsername
+    findUserByEmail
 } = require("../models/userModel");
 
 const {
@@ -25,9 +25,9 @@ const {
 
 async function getAuthenticatedUser(req, res) {
 
-    const username = req.user.username;
+    const email = req.user.email;
 
-    const user = await findUserByUsername(username);
+    const user = await findUserByEmail(email);
 
     if (!user) {
 
@@ -56,10 +56,10 @@ router.post("/", auth, async (req, res) => {
             selectedProducts
 
         } = req.body;
-const username = req.user.username;
+const email = req.user.email;
 
         const user =
-            await findUserByUsername(username);
+            await findUserByEmail(email);
 
         if (!user) {
 
@@ -127,10 +127,10 @@ router.get("/", auth, async (req, res) => {
 
     try {
 
-        const username = req.user.username;
+        const email = req.user.email;
 
 const user =
-    await findUserByUsername(username);
+            await findUserByEmail(email);
 
         if (!user) {
 
@@ -160,8 +160,8 @@ const user =
 
         res.json({
 
-            username:
-                user.username,
+            email:
+                user.email,
 
             pincode:
                 preference.pincode,
@@ -196,12 +196,12 @@ router.post("/reset", auth, async (req, res) => {
 
     try {
 
-        const username = req.user.username;
+        const email = req.user.email;
 
-const user =
-    await findUserByUsername(
-        username
-    );
+        const user =
+            await findUserByEmail(
+                email
+            );
 
 
         if (!user) {
@@ -281,11 +281,11 @@ router.post("/notifications/start", auth, async (req, res) => {
 
         const { days } = req.body;
 
-const username = req.user.username;
+const email = req.user.email;
 
 const user =
-    await findUserByUsername(
-        username
+    await findUserByEmail(
+        email
     );
 
         if (!user) {
@@ -377,12 +377,12 @@ router.post("/notifications/stop", auth, async (req, res) => {
 
     try {
 
-        const username = req.user.username;
+        const email = req.user.email;
 
-const user =
-    await findUserByUsername(
-        username
-    );
+        const user =
+            await findUserByEmail(
+                email
+            );
 
         if (!user) {
 

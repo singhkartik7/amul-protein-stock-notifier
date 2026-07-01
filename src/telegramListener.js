@@ -14,13 +14,13 @@ bot.onText(/^\/start(?:\s+(.+))?$/, async (msg, match) => {
 
     const chatId = msg.chat.id;
 
-    const username = match[1];
+    const token = match[1];
 
     console.log("Chat ID:", chatId);
 
-    console.log("Username:", username);
+    console.log("Token:", token);
 
-    if (!username) {
+    if (!token) {
 
         bot.sendMessage(
             chatId,
@@ -36,7 +36,7 @@ bot.onText(/^\/start(?:\s+(.+))?$/, async (msg, match) => {
         await axios.post(
             `${API_URL}/telegram/connect`,
             {
-                username,
+                token,
                 chatId
             }
         );

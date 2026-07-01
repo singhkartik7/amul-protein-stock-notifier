@@ -815,87 +815,131 @@ ui.telegramBtn.addEventListener(
 
     "click",
 
-    () => {
+    async () => {
 
-        const email =
+        try {
 
-            getEmail();
+            const response =
 
-        window.open(
+                await fetch(
 
-            `https://t.me/Amul_Protein_Stock_Notifier_Bot?start=${email}`,
+                    `${API_URL}/telegram/link`,
 
-            "_blank"
+                    {
 
-        );
+                        headers:
 
-        let attempts = 0;
-
-        const interval =
-
-            setInterval(
-
-                async () => {
-
-                    attempts++;
-
-                    await loadPreferences();
-
-                    if (
-
-                        ui.telegramStatus
-
-                            .textContent
-
-                            .includes(
-
-                                "Connected"
-
-                            )
-
-                    ) {
-
-                        clearInterval(
-
-                            interval
-
-                        );
-
-                        showToast(
-
-                            "✅ Telegram connected."
-
-                        );
-
-                        return;
+                            getAuthHeaders()
 
                     }
 
-                    if (
+                );
 
-                        attempts >= 15
+            const data =
 
-                    ) {
+                await response.json();
 
-                        clearInterval(
+            if (!response.ok) {
 
-                            interval
+                showToast(
 
-                        );
+                    `❌ ${data.message}`
 
-                        showToast(
+                );
 
-                            "❌ Telegram connection timed out."
+                return;
 
-                        );
+            }
 
-                    }
+            window.open(
 
-                },
+                data.link,
 
-                2000
+                "_blank"
 
             );
+
+            let attempts = 0;
+
+            const interval =
+
+                setInterval(
+
+                    async () => {
+
+                        attempts++;
+
+                        await loadPreferences();
+
+                        if (
+
+                            ui.telegramStatus
+
+                                .textContent
+
+                                .includes(
+
+                                    "Connected"
+
+                                )
+
+                        ) {
+
+                            clearInterval(
+
+                                interval
+
+                            );
+
+                            showToast(
+
+                                "✅ Telegram connected."
+
+                            );
+
+                            return;
+
+                        }
+
+                        if (
+
+                            attempts >= 15
+
+                        ) {
+
+                            clearInterval(
+
+                                interval
+
+                            );
+
+                            showToast(
+
+                                "❌ Telegram connection timed out."
+
+                            );
+
+                        }
+
+                    },
+
+                    2000
+
+                );
+
+        }
+
+        catch (err) {
+
+            console.error(err);
+
+            showToast(
+
+                "❌ Unable to generate Telegram link."
+
+            );
+
+        }
 
     }
 

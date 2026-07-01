@@ -91,7 +91,7 @@ async function getAllPreferences() {
 
         SELECT
 
-            users.username,
+            users.email,
 
             preferences.id,
 
@@ -122,7 +122,7 @@ SELECT
 
     preferences.notify_until,
 
-    users.username,
+    users.email,
 
     products.product_name
 
@@ -160,7 +160,7 @@ ORDER BY preferences.pincode
 
         let user = grouped[row.pincode].users.find(
 
-            u => u.username === row.username
+            u => u.email === row.email
 
         );
 
@@ -168,7 +168,7 @@ ORDER BY preferences.pincode
 
             user = {
 
-                username: row.username,
+                email: row.email,
 
                 chatId: row.chat_id,
 

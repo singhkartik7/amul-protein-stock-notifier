@@ -1,5 +1,5 @@
 const pool = require("../database/db");
-
+const crypto = require("crypto");
 async function findUserByEmail(email) {
 
     const result = await pool.query(
@@ -48,7 +48,59 @@ async function findUserById(id) {
     return result.rows[0];
 
 }
+// ========================================
+// Telegram Token
+// ========================================
 
+async function findUserByTelegramToken(token) {
+
+    const result = await pool.query(
+
+        `SELECT *
+
+         FROM users
+
+         WHERE telegram_token = $1`,
+
+        [token]
+
+    );
+
+    return result.rows[0];
+
+}
+
+async function saveTelegramToken(userId, token) {
+
+    await pool.query(
+
+        `UPDATE users
+
+         SET telegram_token = $1
+
+         WHERE id = $2`,
+
+        [
+
+            token,
+
+            userId
+
+        ]
+
+    );
+
+}
+
+function generateTelegramToken() {
+
+    return crypto
+
+        .randomBytes(16)
+
+        .toString("hex");
+
+}
 async function deleteUser(id) {
 
     await pool.query(
@@ -70,6 +122,12 @@ module.exports = {
 
     findUserById,
 
-    deleteUser
+    deleteUser,
+
+    findUserByTelegramToken,
+
+    saveTelegramToken,
+
+    generateTelegramToken
 
 };

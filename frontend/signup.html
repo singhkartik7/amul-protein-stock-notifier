@@ -4,48 +4,292 @@
 <head>
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Create Account</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="css/signup.css">
+    <title>Create Account | Amul Stock Notifier</title>
+
+    <link rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <link
+        rel="stylesheet"
+        href="css/style.css">
 
 </head>
 
 <body>
 
-<div class="container">
+<div class="login-page">
 
-    <div class="card">
+    <div class="login-left">
 
-        <h1>Create Account</h1>
+        <div class="login-brand">
 
-        <p>
-            Create your account to start tracking products.
-        </p>
+            <span class="logo-icon">
 
-        <input
-            id="username"
-            type="text"
-            placeholder="Username">
+                🥛
 
-        <input
-            id="password"
-            type="password"
-            placeholder="Password">
+            </span>
 
-        <input
-            id="confirmPassword"
-            type="password"
-            placeholder="Confirm Password">
+            <h1>
 
-        <button id="signupBtn">
-            Create Account
-        </button>
+                Join Amul Stock Notifier
 
-        <a href="login.html">
-            Already have an account? Login
-        </a>
+            </h1>
+
+            <p>
+
+                Create your free account and receive
+                instant Telegram notifications whenever
+                your favourite Amul Protein products are
+                back in stock.
+
+            </p>
+
+        </div>
+
+        <div class="login-features">
+
+            <div class="login-feature">
+
+                <div class="feature-circle">
+
+                    📦
+
+                </div>
+
+                <div>
+
+                    <h3>
+
+                        Track Multiple Products
+
+                    </h3>
+
+                    <p>
+
+                        Select all the products you
+                        want to monitor.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="login-feature">
+
+                <div class="feature-circle">
+
+                    📍
+
+                </div>
+
+                <div>
+
+                    <h3>
+
+                        Pincode Specific
+
+                    </h3>
+
+                    <p>
+
+                        Receive alerts based on
+                        your own delivery location.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="login-feature">
+
+                <div class="feature-circle">
+
+                    🔔
+
+                </div>
+
+                <div>
+
+                    <h3>
+
+                        Instant Alerts
+
+                    </h3>
+
+                    <p>
+
+                        Never miss another restock.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="login-right">
+
+        <div class="login-card">
+
+            <div class="badge">
+
+                Create Your Account 🚀
+
+            </div>
+
+            <h2 class="mt-2">
+
+                Sign up for free
+
+            </h2>
+
+            <p class="mb-4">
+
+                Start tracking your favourite
+                Amul Protein products today.
+
+            </p>
+
+            <form id="signupForm">
+                              <div class="form-group">
+
+                    <label for="fullName">
+
+                        Full Name
+
+                    </label>
+
+                    <input
+                        type="text"
+                        id="fullName"
+                        placeholder="Enter your full name"
+                        autocomplete="name"
+                        required>
+
+                </div>
+
+                <div class="form-group mt-3">
+
+                    <label for="email">
+
+                        Email Address
+
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Enter your email"
+                        autocomplete="email"
+                        required>
+
+                </div>
+
+                <div class="form-group mt-3">
+
+                    <label for="password">
+
+                        Password
+
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Minimum 6 characters"
+                        autocomplete="new-password"
+                        required>
+
+                </div>
+
+                <div class="form-group mt-3">
+
+                    <label for="confirmPassword">
+
+                        Confirm Password
+
+                    </label>
+
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        placeholder="Re-enter your password"
+                        autocomplete="new-password"
+                        required>
+
+                </div>
+
+                <p
+                    id="errorMessage"
+                    class="form-error hidden">
+
+                </p>
+
+                <button
+                    type="submit"
+                    class="btn btn-primary login-btn mt-3">
+
+                    Create Account
+
+                </button>
+
+            </form>
+
+            <div class="login-divider">
+
+                <span>
+
+                    OR
+
+                </span>
+
+            </div>
+
+            <div class="login-links">
+
+                <p>
+
+                    Already have an account?
+
+                    <a href="login.html">
+
+                        Login
+
+                    </a>
+
+                </p>
+
+                <p>
+
+                    <a href="index.html">
+
+                        ← Back to Home
+
+                    </a>
+
+                </p>
+
+            </div>
+
+        </div>
 
     </div>
 

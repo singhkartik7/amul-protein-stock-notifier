@@ -14,7 +14,7 @@ const {
 const router = express.Router();
 const {
 
-    findUserByUsername,
+    findUserByEmail,
 
     createUser,
 
@@ -36,22 +36,47 @@ const pool = require("../database/db");
 // ========================================
 router.post("/signup", signupLimiter, async (req, res) => {
 try{
-   const { username, password } = req.body;
+   const {
+    fullName,
+    password
+} = req.body;
 
-    if (!username || !password) {
+const email = req.body.email.trim().toLowerCase();
+
+    if (!fullName || !email || !password) {
         return res.status(400).json({
-            message: "Username and password required"
+            message: "All fields required"
         });
     }
 
-    const existingUser =
-        await findUserByUsername(username);
+    
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+if (fullName.trim().length < 2) {
+    return res.status(400).json({
+        message: "Please enter your full name."
+    });
+}
+
+if (!emailRegex.test(email)) {
+    return res.status(400).json({
+        message: "Please enter a valid email."
+    });
+}
+if (password.length < 6) {
+    return res.status(400).json({
+        message: "Password must be at least 6 characters."
+    });
+}    
+
+const existingUser =
+        await findUserByEmail(email);
 
     if (existingUser) {
 
         return res.status(400).json({
 
-            message: "Username already exists"
+            message: "Email already exists"
 
         });
 
@@ -62,7 +87,8 @@ try{
 
 await createUser(
 
-    username,
+    fullName,
+    email,
 
     hashedPassword
 
@@ -92,16 +118,16 @@ catch (err) {
 router.post("/login", loginLimiter, async (req, res) => {
 
     try {
-        const { username, password } = req.body;
+        const { email, password } = req.body;
 
     const user =
-        await findUserByUsername(username);
+        await findUserByEmail(email);
 
    if (!user) {
 
     return res.status(401).json({
 
-        message: "Invalid username or password"
+        message: "Invalid email or password"
 
     });
 
@@ -120,7 +146,7 @@ if (!isPasswordCorrect) {
 
     return res.status(401).json({
 
-        message: "Invalid username or password"
+        message: "Invalid email or password"
 
     });
 
@@ -131,7 +157,7 @@ if (!isPasswordCorrect) {
 
         userId: user.id,
 
-        username: user.username
+        email: user.email
 
     },
 
@@ -149,7 +175,11 @@ res.json({
 
     message: "Login successful",
 
-    token
+    token,
+
+    email: user.email,
+
+    fullName: user.full_name
 
 });
 
@@ -173,11 +203,11 @@ router.delete("/delete", auth, async (req, res) => {
 
     try {
 
-        const username = req.user.username;
+        const email = req.user.email;
 
 const user =
-    await findUserByUsername(
-        username
+    await findUserByEmail(
+        email
     );
 
         if (!user) {

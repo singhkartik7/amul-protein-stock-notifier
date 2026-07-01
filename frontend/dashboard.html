@@ -4,145 +4,509 @@
 <head>
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Dashboard</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="css/dashboard.css">
+    <title>Dashboard | Amul Stock Notifier</title>
+
+    <link rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <link
+        rel="stylesheet"
+        href="css/style.css">
 
 </head>
 
 <body>
 
-    <div class="container">
+<div class="dashboard">
 
-        <h1>Amul Protein Tracker</h1>
+    <!-- =====================
+            SIDEBAR
+    ====================== -->
 
-        <h2 id="welcome">
-            Welcome 👋
-        </h2>
+    <aside class="sidebar">
 
-        <div class="pincode-box">
+        <div class="brand">
 
-            <label>Pincode</label>
+            <div class="brandLogo">
 
-            <input
-                type="text"
-                id="pincode"
-                maxlength="6"
-                placeholder="Enter your pincode">
+                🥛
 
-        </div>
-<input
-    type="text"
-    id="searchProduct"
-    placeholder="🔍 Search products..."
->
-        <h3>Select Products</h3>
+            </div>
 
-        <div id="productsContainer">
+            <div>
 
-            <!-- Product cards will appear here -->
+                <h2>
 
-        </div>
+                    Amul Stock
 
-      <hr>
+                </h2>
 
-<div class="notification-box">
+                <p>
 
-    <h3>🔔 Notification Settings</h3>
+                    Notifier
 
-    <label for="notifyDays">
+                </p>
 
-        Notify me for
-
-    </label>
-
-    <select id="notifyDays">
-
-        <option value="1">1 Day</option>
-
-        <option value="3">3 Days</option>
-
-        <option value="7" selected>7 Days</option>
-
-        <option value="15">15 Days</option>
-
-        <option value="30">30 Days</option>
-
-    </select>
-
-    <div class="notificationButtons">
-
-        <button id="activateNotificationBtn">
-
-            🟢 Activate Notifications
-
-        </button>
-
-        <button id="stopNotificationBtn">
-
-            🔴 Stop Notifications
-
-        </button>
-
-    </div>
-
-    <p id="notificationStatus">
-
-        🔴 Notifications Stopped
-
-    </p>
-
-</div>
-
-<hr>
-
-<button id="saveBtn">
-    💾 Save Preferences
-</button>
-
-<button id="resetBtn">
-    🔄 Reset Preferences
-</button>
-
-<div class="telegram-box">
-
-            <h3>Telegram</h3>
-
-            <p id="telegramStatus">
-                🔴 Not Connected
-            </p>
-
-           <div class="telegramButtons">
-
-    <button id="telegramBtn">
-        Connect Telegram
-    </button>
-
-    <button id="disconnectTelegramBtn">
-        Disconnect Telegram
-    </button>
-
-</div>
+            </div>
 
         </div>
 
-        <button id="logoutBtn">
-            Logout
-        </button>
+        <nav class="sidebarNav">
 
-        <button id="deleteBtn">
-    Delete Account
-</button>
+            <div class="navItem active">
 
-    </div>
+                📦 Dashboard
 
-    <script src="js/config.js"></script>
-    <script src="js/dashboard.js"></script>
-<div id="toast">
+            </div>
+
+            <div class="navItem">
+
+                🔔 Notifications
+
+            </div>
+
+            <div class="navItem">
+
+                📱 Telegram
+
+            </div>
+
+            <div class="navItem">
+
+                ⚙ Account
+
+            </div>
+
+        </nav>
+
+        <div class="sidebarBottom">
+
+            Designed & Developed
+
+            <br>
+
+            <strong>
+
+                Kartik Singh
+
+            </strong>
+
+        </div>
+
+    </aside>
+
+    <!-- =====================
+            CONTENT
+    ====================== -->
+
+    <main class="dashboardMain">
+
+        <header class="dashboardHeader">
+
+            <div>
+
+                <h1>
+
+                    Dashboard
+
+                </h1>
+
+                <h2 id="welcome">
+
+                    Welcome 👋
+
+                </h2>
+
+            </div>
+
+        </header>
+
+        <!-- =====================
+                TOP GRID
+        ====================== -->
+
+        <div class="dashboardGrid">
+
+            <div class="dashboardCard">
+
+                <h3>
+
+                    📍 Delivery Pincode
+
+                </h3>
+
+                <p>
+
+                    Stock availability depends
+                    on your selected location.
+
+                </p>
+
+                <input
+
+                    id="pincode"
+
+                    type="text"
+
+                    maxlength="6"
+
+                    placeholder="302017">
+
+            </div>
+
+            <div class="dashboardCard">
+
+                <h3>
+
+                    🔍 Search Products
+
+                </h3>
+
+                <p>
+
+                    Search products instantly.
+
+                </p>
+
+                <input
+
+                    id="searchProduct"
+
+                    type="text"
+
+                    placeholder="Search products...">
+
+            </div>
+
+        </div>
+
+        <!-- =====================
+                PRODUCTS
+        ====================== -->
+
+        <section class="dashboardSection">
+
+            <div class="sectionHeader">
+
+                <div>
+
+                    <h2>
+
+                        Select Products
+
+                    </h2>
+
+                    <p>
+
+                        Choose products to monitor.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div
+
+                id="productsContainer"
+
+                class="productsGrid">
+
+            </div>
+
+        </section>
+                <!-- =====================
+                NOTIFICATION + TELEGRAM
+        ====================== -->
+
+        <div class="dashboardGrid mt-4">
+
+            <div class="dashboardCard">
+
+                <h3>
+
+                    🔔 Notification Settings
+
+                </h3>
+
+                <p>
+
+                    Control how long notifications remain active.
+
+                </p>
+
+                <label>
+
+                    Notify me for
+
+                </label>
+
+                <select id="notifyDays">
+
+                    <option value="1">1 Day</option>
+
+                    <option value="3">3 Days</option>
+
+                    <option value="7" selected>7 Days</option>
+
+                    <option value="15">15 Days</option>
+
+                    <option value="30">30 Days</option>
+
+                </select>
+
+                <div class="actionButtons mt-3">
+
+                    <button
+
+                        id="activateNotificationBtn"
+
+                        class="btn btn-primary">
+
+                        Activate
+
+                    </button>
+
+                    <button
+
+                        id="stopNotificationBtn"
+
+                        class="btn btn-secondary dangerBtn">
+
+                        Stop
+
+                    </button>
+
+                </div>
+
+                <div
+                    id="notificationStatus"
+                    class="statusCard mt-3">
+
+                    🔴 Notifications Stopped
+
+                </div>
+
+            </div>
+
+            <div class="dashboardCard">
+
+                <h3>
+
+                    📱 Telegram
+
+                </h3>
+
+                <p>
+
+                    Connect Telegram to receive
+                    instant stock alerts.
+
+                </p>
+
+                <div
+                    id="telegramStatus"
+                    class="statusCard">
+
+                    🔴 Not Connected
+
+                </div>
+
+                <div class="actionButtons mt-3">
+
+                    <button
+
+                        id="telegramBtn"
+
+                        class="btn btn-primary">
+
+                        Connect Telegram
+
+                    </button>
+
+                    <button
+
+                        id="disconnectTelegramBtn"
+
+                        class="btn btn-secondary">
+
+                        Disconnect
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- =====================
+                SAVE
+        ====================== -->
+
+        <div class="dashboardGrid mt-4">
+
+            <div class="dashboardCard">
+
+                <h3>
+
+                    💾 Preferences
+
+                </h3>
+
+                <p>
+
+                    Save your current product
+                    selections and settings.
+
+                </p>
+
+                <div class="actionButtons">
+
+                    <button
+
+                        id="saveBtn"
+
+                        class="btn btn-primary">
+
+                        Save Preferences
+
+                    </button>
+
+                    <button
+
+                        id="resetBtn"
+
+                        class="btn btn-secondary">
+
+                        Reset Preferences
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="dashboardCard">
+
+                <h3>
+
+                    ⚠ Account
+
+                </h3>
+
+                <p>
+
+                    Manage your account
+                    securely.
+
+                </p>
+
+                <div class="actionButtons">
+
+                    <button
+
+                        id="logoutBtn"
+
+                        class="btn btn-secondary">
+
+                        Logout
+
+                    </button>
+
+                    <button
+
+                        id="deleteBtn"
+
+                        class="btn dangerBtn">
+
+                        Delete Account
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+                <!-- =====================
+                FOOTER
+        ====================== -->
+
+        <footer class="dashboardFooter">
+
+            <div class="footerLeft">
+
+                <h3>
+
+                    Amul Stock Notifier
+
+                </h3>
+
+                <p>
+
+                    Never miss your favourite
+                    Amul Protein products again.
+
+                </p>
+
+            </div>
+
+            <div class="footerRight">
+
+                <a
+                    href="https://github.com/singhkartik7"
+                    target="_blank">
+
+                    GitHub
+
+                </a>
+
+                <a
+                    href="https://linkedin.com/in/singhkartik7"
+                    target="_blank">
+
+                    LinkedIn
+
+                </a>
+
+                <a
+                    href="mailto:kartiksinghjaipur@gmail.com">
+
+                    Email
+
+                </a>
+
+            </div>
+
+        </footer>
+
+    </main>
 
 </div>
+
+<!-- =====================
+        TOAST
+===================== -->
+
+<div id="toast"></div>
+
+<script src="js/config.js"></script>
+<script src="js/dashboard.js"></script>
+
 </body>
 
 </html>

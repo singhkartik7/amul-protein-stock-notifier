@@ -1,87 +1,219 @@
-const loginBtn = document.getElementById("loginBtn");
+// ========================================
+// Elements
+// ========================================
 
-loginBtn.addEventListener("click", async () => {
+const loginForm =
+    document.getElementById("loginForm");
 
-    const username =
-        document.getElementById("username").value.trim();
+const emailInput =
+    document.getElementById("email");
 
-    const password =
-        document.getElementById("password").value;
+const passwordInput =
+    document.getElementById("password");
 
-    if (!username || !password) {
+const errorMessage =
+    document.getElementById("errorMessage");
 
-        alert("Please fill all fields.");
+// ========================================
+// Helpers
+// ========================================
 
-        return;
+function showError(message) {
+
+    errorMessage.textContent = message;
+
+    errorMessage.classList.remove("hidden");
+
+}
+
+function hideError() {
+
+    errorMessage.textContent = "";
+
+    errorMessage.classList.add("hidden");
+
+}
+
+function setLoading(isLoading) {
+
+    const button =
+        loginForm.querySelector("button");
+
+    if (isLoading) {
+
+        button.disabled = true;
+
+        button.textContent = "Signing In...";
 
     }
 
-    try {
+    else {
 
-        const response = await fetch(
+        button.disabled = false;
 
-            `${API_URL}/auth/login`,
+        button.textContent = "Login";
 
-            {
+    }
 
-                method: "POST",
+}
+// ========================================
+// Login
+// ========================================
 
-                headers: {
+loginForm.addEventListener(
 
-                    "Content-Type": "application/json"
+    "submit",
 
-                },
+    async (e) => {
 
-                body: JSON.stringify({
+        e.preventDefault();
 
-                    username,
+        hideError();
 
-                    password
+        const email =
+            emailInput.value.trim();
 
-                })
+        const password =
+            passwordInput.value;
 
-            }
+        if (!email || !password) {
 
-        );
+            showError(
 
-        const data = await response.json();
+                "Please fill all fields."
 
-        if (!response.ok) {
-
-            alert(data.message);
+            );
 
             return;
 
         }
 
-        localStorage.setItem(
+        setLoading(true);
 
-            "username",
+        try {
 
-            username
+            const response =
+                await fetch(
 
-        );
+                    `${API_URL}/auth/login`,
 
-        localStorage.setItem(
+                    {
 
-            "token",
+                        method: "POST",
 
-            data.token
+                        headers: {
 
-        );
+                            "Content-Type":
 
-        alert(data.message);
+                                "application/json"
 
-        window.location.href = "dashboard.html";
+                        },
+
+                        body: JSON.stringify({
+
+                            email,
+
+                            password
+
+                        })
+
+                    }
+
+                );
+
+            const data =
+                await response.json();
+
+            if (!response.ok) {
+
+                showError(
+
+                    data.message
+
+                );
+
+                return;
+
+            }
+                        localStorage.setItem(
+
+                STORAGE_KEYS.token,
+
+                data.token
+
+            );
+
+            // These will work after we update the backend
+            // to return fullName and email.
+
+            if (data.email) {
+
+                localStorage.setItem(
+
+                    STORAGE_KEYS.email,
+
+                    data.email
+
+                );
+
+            }
+
+            if (data.fullName) {
+
+                localStorage.setItem(
+
+                    STORAGE_KEYS.fullName,
+
+                    data.fullName
+
+                );
+
+            }
+
+            window.location.href =
+
+                "dashboard.html";
+
+        }
+
+        catch (err) {
+
+            console.error(err);
+
+            showError(
+
+                "Unable to login. Please try again."
+
+            );
+
+        }
+
+        finally {
+
+            setLoading(false);
+
+        }
 
     }
 
-    catch (err) {
+);
 
-        console.error(err);
+// ========================================
+// Hide Error While Typing
+// ========================================
 
-        alert("Unable to login.");
+emailInput.addEventListener(
 
-    }
+    "input",
 
-});
+    hideError
+
+);
+
+passwordInput.addEventListener(
+
+    "input",
+
+    hideError
+
+);

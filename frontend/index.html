@@ -4,48 +4,1061 @@
 <head>
 
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
 
-    <title>Amul Protein Tracker</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Amul Stock Notifier</title>
+
+    <meta
+        name="description"
+        content="Never miss your favourite Amul Protein products again. Get instant Telegram stock alerts based on your pincode.">
+
+    <link rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
 
     <link rel="stylesheet"
-          href="css/style.css">
+        href="css/style.css">
 
 </head>
 
 <body>
 
-    <div class="container">
+    <div class="glow one"></div>
+    <div class="glow two"></div>
+    <div class="glow three"></div>
 
-        <div class="card">
+    <!-- =========================
+            NAVBAR
+    ========================== -->
 
-            <h1>Amul Protein Tracker</h1>
+    <nav class="navbar">
 
-            <p>
-                Never miss your favourite
-                Amul High Protein products again.
-            </p>
+        <div class="container">
 
-            <div class="buttons">
+            <a href="index.html"
+                class="logo">
+
+                🥛
+                <span>Amul Stock Notifier</span>
+
+            </a>
+
+            <div class="nav-links">
+
+                <a href="#features">
+                    Features
+                </a>
+
+                <a href="#how">
+                    How It Works
+                </a>
+
+                <a href="#faq">
+                    FAQ
+                </a>
+
+                <a href="#developer">
+                    Developer
+                </a>
+
+            </div>
+
+            <div class="nav-buttons">
 
                 <a href="login.html">
-                    <button class="loginBtn">
+
+                    <button class="btn btn-secondary">
+
                         Login
+
                     </button>
+
                 </a>
 
                 <a href="signup.html">
-                    <button class="signupBtn">
-                        Create Account
+
+                    <button class="btn btn-primary">
+
+                        Get Started
+
                     </button>
+
                 </a>
 
             </div>
 
         </div>
 
-    </div>
+    </nav>
+
+    <!-- =========================
+            HERO
+    ========================== -->
+
+    <section class="hero">
+
+        <div class="container">
+
+            <div class="hero-content reveal">
+
+                <div class="badge">
+
+                    ⚡ Real-Time Stock Monitoring
+
+                </div>
+
+                <h1>
+
+                    Never Miss Your Favourite
+                    Amul Protein Products Again.
+
+                </h1>
+
+                <p>
+
+                    Amul Stock Notifier continuously monitors product availability
+                    based on your selected pincode and sends instant Telegram
+                    notifications the moment your favourite products come back
+                    in stock.
+
+                </p>
+
+                <div class="hero-buttons">
+
+                    <a href="signup.html">
+
+                        <button class="btn btn-primary">
+
+                            Create Free Account
+
+                        </button>
+
+                    </a>
+
+                    <a href="login.html">
+
+                        <button class="btn btn-secondary">
+
+                            Login
+
+                        </button>
+
+                    </a>
+
+                </div>
+
+                <div
+                    style="display:flex;gap:30px;flex-wrap:wrap;margin-top:55px;">
+
+                    <div>
+
+                        <h3 style="color:var(--primary);">
+
+                            Real-Time
+
+                        </h3>
+
+                        <p>
+
+                            Stock Monitoring
+
+                        </p>
+
+                    </div>
+
+                    <div>
+
+                        <h3 style="color:var(--primary);">
+
+                            Telegram
+
+                        </h3>
+
+                        <p>
+
+                            Instant Alerts
+
+                        </p>
+
+                    </div>
+
+                    <div>
+
+                        <h3 style="color:var(--primary);">
+
+                            Pincode
+
+                        </h3>
+
+                        <p>
+
+                            Personalized Tracking
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="hero-card reveal">
+
+                <h3>
+
+                    Telegram Notification Preview
+
+                </h3>
+
+                <div class="telegram-card">
+
+                    <div class="telegram-header">
+
+                        Amul Stock Notifier
+
+                    </div>
+
+                    <div class="telegram-body">
+
+                        🚨 <strong>Stock Alert!</strong>
+
+                        <br><br>
+
+                        📦 <strong>Amul Chocolate Whey Protein</strong>
+
+                        <br>
+
+                        34 g | Pack of 60 Sachets
+
+                        <br><br>
+
+                        📍 Pincode:
+                        <strong>302017</strong>
+
+                        <br><br>
+
+                        📦 Available:
+                        <strong>157</strong>
+
+                        <br><br>
+
+                        🛒 <a href="#">
+
+                            Buy Now
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+        <!-- =========================
+            FEATURES
+    ========================== -->
+
+    <section id="features">
+
+        <div class="container">
+
+            <div class="section-header reveal">
+
+                <div class="badge">
+
+                    🚀 Powerful Features
+
+                </div>
+
+                <h2>
+
+                    Everything You Need to Never Miss a Restock
+
+                </h2>
+
+                <p>
+
+                    Built specifically for Amul Protein enthusiasts who are tired
+                    of refreshing the website every few minutes hoping products
+                    become available.
+
+                </p>
+
+            </div>
+
+            <div class="grid grid-4">
+
+                <div class="feature-card reveal">
+
+                    <div class="feature-icon">
+
+                        ⚡
+
+                    </div>
+
+                    <h3>
+
+                        Real-Time Monitoring
+
+                    </h3>
+
+                    <p>
+
+                        Automatically checks product stock availability
+                        continuously so you don't have to.
+
+                    </p>
+
+                </div>
+
+                <div class="feature-card reveal">
+
+                    <div class="feature-icon">
+
+                        🔔
+
+                    </div>
+
+                    <h3>
+
+                        Instant Telegram Alerts
+
+                    </h3>
+
+                    <p>
+
+                        Receive notifications within seconds whenever
+                        your selected products are back in stock.
+
+                    </p>
+
+                </div>
+
+                <div class="feature-card reveal">
+
+                    <div class="feature-icon">
+
+                        📍
+
+                    </div>
+
+                    <h3>
+
+                        Pincode Based Tracking
+
+                    </h3>
+
+                    <p>
+
+                        Track stock availability specifically for
+                        your delivery location.
+
+                    </p>
+
+                </div>
+
+                <div class="feature-card reveal">
+
+                    <div class="feature-icon">
+
+                        📦
+
+                    </div>
+
+                    <h3>
+
+                        Multiple Product Tracking
+
+                    </h3>
+
+                    <p>
+
+                        Choose multiple Amul Protein products
+                        and receive alerts only for the ones
+                        you actually want.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =========================
+            HOW IT WORKS
+    ========================== -->
+
+    <section id="how">
+
+        <div class="container">
+
+            <div class="section-header reveal">
+
+                <div class="badge">
+
+                    📖 Simple Process
+
+                </div>
+
+                <h2>
+
+                    Get Started In Less Than A Minute
+
+                </h2>
+
+                <p>
+
+                    Connecting Telegram and tracking your favourite
+                    products takes only a few simple steps.
+
+                </p>
+
+            </div>
+
+            <div class="steps">
+
+                <div class="step reveal">
+
+                    <div class="step-number">
+
+                        1
+
+                    </div>
+
+                    <h3>
+
+                        Create Account
+
+                    </h3>
+
+                    <p>
+
+                        Sign up using your email and
+                        create your free account.
+
+                    </p>
+
+                </div>
+
+                <div class="step reveal">
+
+                    <div class="step-number">
+
+                        2
+
+                    </div>
+
+                    <h3>
+
+                        Select Products
+
+                    </h3>
+
+                    <p>
+
+                        Choose the Amul Protein products
+                        you want to monitor.
+
+                    </p>
+
+                </div>
+
+                <div class="step reveal">
+
+                    <div class="step-number">
+
+                        3
+
+                    </div>
+
+                    <h3>
+
+                        Enter Pincode
+
+                    </h3>
+
+                    <p>
+
+                        Add your delivery pincode
+                        for accurate stock tracking.
+
+                    </p>
+
+                </div>
+
+                <div class="step reveal">
+
+                    <div class="step-number">
+
+                        4
+
+                    </div>
+
+                    <h3>
+
+                        Connect Telegram
+
+                    </h3>
+
+                    <p>
+
+                        Link your Telegram account
+                        with a single click.
+
+                    </p>
+
+                </div>
+
+                <div class="step reveal">
+
+                    <div class="step-number">
+
+                        5
+
+                    </div>
+
+                    <h3>
+
+                        Receive Alerts
+
+                    </h3>
+
+                    <p>
+
+                        Get instant notifications
+                        whenever products are available.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+       <!-- =========================
+            WHY THIS WEBSITE EXISTS
+    ========================== -->
+
+    <section class="why">
+
+        <div class="container">
+
+            <div class="why reveal">
+
+                <div class="why-content">
+
+                    <div class="badge">
+
+                        💡 Why This Project?
+
+                    </div>
+
+                    <h2 class="mt-2">
+
+                        Stop Refreshing The Website Every Few Minutes.
+
+                    </h2>
+
+                    <p>
+
+                        Anyone who regularly buys Amul High Protein products
+                        knows how frustrating it is when products go out of
+                        stock within minutes.
+
+                    </p>
+
+                    <p>
+
+                        Instead of checking the website multiple times a day,
+                        Amul Stock Notifier continuously monitors stock
+                        availability and instantly alerts you on Telegram.
+
+                    </p>
+
+                    <div class="highlight-box">
+
+                        <strong>One Notification.</strong>
+
+                        That's all you need to know exactly when your
+                        favourite product becomes available.
+
+                    </div>
+
+                </div>
+
+                <div class="telegram-card reveal">
+
+                    <div class="telegram-header">
+
+                        📱 Telegram Notification
+
+                    </div>
+
+                    <div class="telegram-body">
+
+                        🚨 <strong>Stock Alert!</strong>
+
+                        <br><br>
+
+                        📦 <strong>Amul Chocolate Whey Protein</strong>
+
+                        <br>
+
+                        34 g | Pack of 60 Sachets
+
+                        <br><br>
+
+                        📍 Pincode:
+                        <strong>302017</strong>
+
+                        <br><br>
+
+                        📦 Available:
+                        <strong>157</strong>
+
+                        <br><br>
+
+                        🛒 <a href="#">
+
+                            Buy Now
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =========================
+                STATS
+    ========================== -->
+
+    <section>
+
+        <div class="container">
+
+            <div class="grid grid-4">
+
+                <div class="feature-card reveal text-center">
+
+                    <h2 style="color:var(--primary);">
+
+                        24×7
+
+                    </h2>
+
+                    <p>
+
+                        Automated Monitoring
+
+                    </p>
+
+                </div>
+
+                <div class="feature-card reveal text-center">
+
+                    <h2 style="color:var(--primary);">
+
+                        Instant
+
+                    </h2>
+
+                    <p>
+
+                        Telegram Alerts
+
+                    </p>
+
+                </div>
+
+                <div class="feature-card reveal text-center">
+
+                    <h2 style="color:var(--primary);">
+
+                        Free
+
+                    </h2>
+
+                    <p>
+
+                        Forever To Use
+
+                    </p>
+
+                </div>
+
+                <div class="feature-card reveal text-center">
+
+                    <h2 style="color:var(--primary);">
+
+                        Secure
+
+                    </h2>
+
+                    <p>
+
+                        Encrypted Login System
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =========================
+                FAQ
+    ========================== -->
+
+    <section id="faq">
+
+        <div class="container">
+
+            <div class="section-header reveal">
+
+                <div class="badge">
+
+                    ❓ Frequently Asked Questions
+
+                </div>
+
+                <h2>
+
+                    Everything You Need To Know
+
+                </h2>
+
+                <p>
+
+                    Common questions about Amul Stock Notifier.
+
+                </p>
+
+            </div>
+
+            <div class="faq">
+
+                <div class="faq-item reveal">
+
+                    <h3>
+
+                        Is Amul Stock Notifier free?
+
+                    </h3>
+
+                    <p>
+
+                        Yes. The service is completely free to use.
+
+                    </p>
+
+                </div>
+
+                <div class="faq-item reveal">
+
+                    <h3>
+
+                        Do I need Telegram?
+
+                    </h3>
+
+                    <p>
+
+                        Yes. Telegram is used to instantly notify you when
+                        your selected products become available.
+
+                    </p>
+
+                </div>
+
+                <div class="faq-item reveal">
+
+                    <h3>
+
+                        Which products can I track?
+
+                    </h3>
+
+                    <p>
+
+                        All currently supported Amul High Protein products
+                        available on the official Amul website.
+
+                    </p>
+
+                </div>
+
+                <div class="faq-item reveal">
+
+                    <h3>
+
+                        How does pincode tracking work?
+
+                    </h3>
+
+                    <p>
+
+                        Stock availability can vary by delivery location.
+                        Your selected pincode ensures alerts are relevant
+                        to your area.
+
+                    </p>
+
+                </div>
+
+                <div class="faq-item reveal">
+
+                    <h3>
+
+                        Is this an official Amul product?
+
+                    </h3>
+
+                    <p>
+
+                        No. This is an independent stock tracking tool
+                        created for the community and is not affiliated
+                        with or endorsed by Amul.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+     <!-- =========================
+            DEVELOPER
+    ========================== -->
+
+    <section id="developer">
+
+        <div class="container">
+
+            <div class="developer">
+
+                <div class="badge">
+
+                    👨‍💻 About The Developer
+
+                </div>
+
+                <div class="developer-card mt-3 reveal">
+
+                    <h2>
+
+                        Designed & Developed by
+                        Kartik Singh
+
+                    </h2>
+
+                    <p>
+
+                        Final Year Computer Science Engineering student
+                        passionate about building real-world full stack
+                        applications that solve practical problems.
+
+                        <br><br>
+
+                        Amul Stock Notifier was built to help thousands of
+                        fitness enthusiasts receive instant stock alerts
+                        instead of constantly refreshing the Amul website.
+
+                    </p>
+
+                    <div class="social-links">
+
+                        <a
+                            href="https://github.com/singhkartik7"
+                            target="_blank">
+
+                            GitHub
+
+                        </a>
+
+                        <a
+                            href="https://linkedin.com/in/singhkartik7"
+                            target="_blank">
+
+                            LinkedIn
+
+                        </a>
+
+                        <a
+                            href="mailto:kartiksinghjaipur@gmail.com">
+
+                            Email
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =========================
+            FINAL CTA
+    ========================== -->
+
+    <section>
+
+        <div class="container">
+
+            <div class="developer-card text-center reveal">
+
+                <div class="badge">
+
+                    🚀 Ready to Start?
+
+                </div>
+
+                <h2 class="mt-2">
+
+                    Stop Missing Restocks.
+
+                </h2>
+
+                <p>
+
+                    Create your free account,
+                    connect Telegram,
+                    choose your favourite products,
+                    and receive instant stock alerts.
+
+                </p>
+
+                <div
+                    style="
+                        display:flex;
+                        justify-content:center;
+                        gap:20px;
+                        flex-wrap:wrap;
+                        margin-top:35px;
+                    ">
+
+                    <a href="signup.html">
+
+                        <button class="btn btn-primary">
+
+                            Create Free Account
+
+                        </button>
+
+                    </a>
+
+                    <a href="login.html">
+
+                        <button class="btn btn-secondary">
+
+                            Login
+
+                        </button>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =========================
+            FOOTER
+    ========================== -->
+
+    <footer>
+
+        <div class="container">
+
+            <div class="footer-links">
+
+                <a
+                    href="https://github.com/singhkartik7"
+                    target="_blank">
+
+                    GitHub
+
+                </a>
+
+                <a
+                    href="https://linkedin.com/in/singhkartik7"
+                    target="_blank">
+
+                    LinkedIn
+
+                </a>
+
+                <a
+                    href="mailto:kartiksinghjaipur@gmail.com">
+
+                    Email
+
+                </a>
+
+            </div>
+
+            <p class="mt-3">
+
+                Designed & Developed with ❤️ by Kartik Singh
+
+            </p>
+
+            <p
+                style="
+                    max-width:700px;
+                    margin:auto;
+                    margin-top:15px;
+                    font-size:.92rem;
+                    color:var(--text-muted);
+                ">
+
+                Disclaimer:
+                This project is an independent stock tracking tool
+                created for educational and community purposes.
+                It is not affiliated with or endorsed by Amul.
+
+            </p>
+
+        </div>
+
+    </footer>
 
 </body>
 

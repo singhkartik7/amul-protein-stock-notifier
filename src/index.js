@@ -9,6 +9,9 @@ const { processProducts } = require("./products");
 const { shouldNotify } = require("./notifier");
 const { sendNotification } = require("./telegram");
 
+const { getProductLinks } = require("./productLinks");
+
+
 const {
     getGroupedPreferences
 } = require("./models/preferenceModel");
@@ -89,6 +92,10 @@ async function checkStock() {
                     page,
                     pincode
                 );
+                const productLinks = await getProductLinks(page);
+
+console.log(productLinks);
+console.log(Object.keys(productLinks).length);
 
                 const response =
                     await page.waitForResponse(
@@ -190,7 +197,6 @@ function startStockChecker() {
     }, 2.5 * 60 * 1000);
 
 }
-
 module.exports = {
 
     startStockChecker

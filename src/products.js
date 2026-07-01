@@ -44,7 +44,7 @@ async function processProducts(
             );
             product.url = generateProductUrl(product.name);
 
-console.log(product.url);
+
 
             await shouldNotify(
 

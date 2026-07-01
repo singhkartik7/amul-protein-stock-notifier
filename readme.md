@@ -1,188 +1,193 @@
-# 🥛 Amul Protein Stock Notifier
+<div align="center">
 
-A full-stack web application that monitors the availability of Amul High Protein products on the Amul online store and sends real-time Telegram notifications when selected products are restocked.
+# 🥛 Amul Stock Notifier
 
-Designed to solve the problem of frequently out-of-stock Amul protein products by automatically checking inventory every few minutes and notifying users instantly.
+### Never Miss Your Favourite Amul Protein Products Again.
+
+Real-time stock monitoring with instant Telegram notifications based on your selected pincode.
+
+🌐 **Live Demo:** https://amul-stock-notifier.vercel.app/index.html
+
+</div>
+
+---
+
+# 📖 About
+
+Amul Stock Notifier is a full-stack web application that automatically monitors the availability of Amul Protein products and instantly notifies users on Telegram whenever their selected products come back in stock.
+
+Instead of manually checking the Amul website multiple times a day, users simply select the products they want, enter their pincode, connect Telegram, and let the application monitor stock availability 24/7.
 
 ---
 
 # ✨ Features
 
-### 👤 User Management
+- 🥛 Track your favourite Amul Protein products
+- 📍 Pincode-based stock monitoring
+- 🔔 Instant Telegram stock notifications
+- 🛒 Direct Buy Now link in every notification
+- ⚡ Automated stock checking using Playwright
+- 👤 User Authentication
+- 🔐 JWT-secured API
+- 🔑 Password hashing with bcrypt
+- 🗄 PostgreSQL database hosted on Neon
+- 🛡 SQL Injection protection using parameterized queries
+- 🚦 API Rate Limiting
+- ☁️ Cloud deployment using Vercel & Render
+- 📱 Fully responsive interface
 
-- User Signup
-- User Login
-- Delete Account
-- Persistent user preferences
+---
 
-### 📦 Product Tracking
+# 🚀 How It Works
 
-- Search products
-- Track multiple products
-- Pincode-based availability
-- Save product preferences
-- Reset tracking preferences
-
-### 🔔 Notification System
-
-- Telegram Bot Integration
-- Connect / Disconnect Telegram
-- Instant stock notifications
-- Notification duration control
-    - 1 Day
-    - 3 Days
-    - 7 Days
-    - 15 Days
-    - 30 Days
-- Start Notifications
-- Stop Notifications
-- Live notification status
-- Notification expiry countdown
-
-### ⚡ Stock Monitoring
-
-- Automatic stock checking
-- Multi-user support
-- Pincode-wise optimization
-- Stock change detection
-- Duplicate notification prevention
+1. Create an account.
+2. Login to your dashboard.
+3. Enter your delivery pincode.
+4. Select the products you want to monitor.
+5. Save your preferences.
+6. Connect your Telegram account.
+7. Activate notifications.
+8. The stock checker continuously monitors Amul Store.
+9. As soon as stock becomes available, you instantly receive a Telegram notification with a direct purchase link.
 
 ---
 
 # 🛠 Tech Stack
 
-## Frontend
+| Category | Technology |
+|----------|------------|
+| Frontend | HTML5, CSS3, JavaScript |
+| Backend | Node.js, Express.js |
+| Database | Neon PostgreSQL |
+| Authentication | JWT, bcrypt |
+| Automation | Playwright |
+| Notifications | Telegram Bot API |
+| Deployment | Vercel, Render |
 
-- HTML5
-- CSS3
-- JavaScript
+---
 
-## Backend
+# 🔒 Security
 
-- Node.js
-- Express.js
-- Playwright
-- Telegram Bot API
+This project follows several security best practices:
+
 - JWT Authentication
-- bcrypt
-- Helmet
-- Express Rate Limit
-
-## Database
-
-- PostgreSQL
+- Password hashing using bcrypt
+- SQL Injection protection with parameterized PostgreSQL queries
+- API Rate Limiting using Express Rate Limit
+- Protected API routes
+- Environment variables for sensitive credentials
 
 ---
 
-# 🗄 Database
+# 📂 Project Structure
 
-The application uses PostgreSQL with the following tables:
-
-- users
-- preferences
-- tracked_products
-- stock
-
----
-
-# 🚀 Installation
-
-## Clone Repository
-
-```bash
-git clone <repository-url>
+```text
+amul-stock-notifier
+│
+├── frontend/
+│   ├── css/
+│   ├── js/
+│   ├── index.html
+│   ├── login.html
+│   ├── signup.html
+│   └── dashboard.html
+│
+├── src/
+│   ├── browser/
+│   ├── middleware/
+│   ├── models/
+│   ├── routes/
+│   ├── services/
+│   ├── telegram/
+│   ├── utils/
+│   ├── server.js
+│   └── index.js
+│
+├── package.json
+└── README.md
 ```
 
-## Install Dependencies
+---
+
+# ⚙️ Installation
+
+Clone the repository
+
+```bash
+git clone https://github.com/singhkartik7/amul-stock-notifier.git
+```
+
+Move into the project directory
+
+```bash
+cd amul-stock-notifier
+```
+
+Install dependencies
 
 ```bash
 npm install
 ```
 
-## Create Environment Variables
-
-Create a `.env` file.
+Create a `.env` file
 
 ```env
-BOT_TOKEN=YOUR_TELEGRAM_BOT_TOKEN
+DATABASE_URL=
 
-DATABASE_URL=YOUR_POSTGRES_DATABASE_URL
+JWT_SECRET=
 
-HEADLESS=false
+BOT_TOKEN=
+
+PORT=
 ```
 
-## Start the Server
+Start the server
 
 ```bash
-node src/server.js
+npm start
 ```
 
 ---
 
-# 📁 Project Structure
+# 🌐 Live Demo
 
-```
-frontend/
-│
-├── css/
-├── js/
-└── dashboard.html
+Visit the application here:
 
-src/
-│
-├── models/
-├── routes/
-├── database/
-├── telegramListener.js
-├── index.js
-└── server.js
-
-data/
-└── products.json
-```
+### https://amul-stock-notifier.vercel.app/index.html
 
 ---
 
-# ⚙️ How It Works
+# 🔮 Future Improvements
 
-1. User creates an account.
-2. Connects Telegram.
-3. Saves pincode and products.
-4. Activates notifications for a selected duration.
-5. Playwright checks Amul inventory periodically.
-6. PostgreSQL stores stock history.
-7. Telegram notification is sent whenever stock changes.
-
----
-
-# 📌 Current Features
-
-- ✅ PostgreSQL backend
-- ✅ Multi-user architecture
-- ✅ Product tracking
-- ✅ Telegram integration
-- ✅ Notification management
-- ✅ Stock history
-- ✅ Responsive dashboard
-- ✅ JWT Authentication
-- ✅ Password Hashing (bcrypt)
-- ✅ Protected API Routes
-- ✅ Rate Limiting
-- ✅ Security Headers (Helmet)
-
----
-
-# 🚧 Upcoming Improvements
-
-- Change password
-- Docker support
-- Production deployment
-- Admin dashboard
 - Email notifications
-- Analytics dashboard
+- WhatsApp notifications
+- Multiple pincode tracking
+- Product price history
+- Admin dashboard
+- Product analytics
+- Progressive Web App (PWA)
+
+---
+
+# 👨‍💻 Author
+
+**Kartik Singh**
+
+Computer Science Engineering Student
+
+GitHub:
+https://github.com/singhkartik7
+
+---
+
+# ⭐ Support
+
+If you found this project useful, consider giving it a ⭐ on GitHub.
+
+It helps others discover the project and motivates further development.
 
 ---
 
 # 📄 License
 
-This project is developed for educational, portfolio, and personal learning purposes.
+This project is licensed under the MIT License.

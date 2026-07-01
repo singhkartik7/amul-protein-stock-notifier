@@ -2194,7 +2194,10 @@ footer p{
 
     cursor:pointer;
 
-    transition:.25s;
+    transition:
+    background .25s ease,
+    color .25s ease,
+    transform .25s ease;
 
     color:var(--text-light);
 
@@ -2207,6 +2210,8 @@ footer p{
     background:rgba(20,184,166,.08);
 
     color:white;
+
+    transform:translateX(4px);
 
 }
 

@@ -67,6 +67,46 @@ const ui = {
 };
 
 // ========================================
+// Sidebar Navigation
+// ========================================
+
+const dashboardNav =
+    document.getElementById("dashboardNav");
+
+const notificationNav =
+    document.getElementById("notificationNav");
+
+const telegramNav =
+    document.getElementById("telegramNav");
+
+const accountNav =
+    document.getElementById("accountNav");
+
+const dashboardSection =
+    document.getElementById("dashboardSection");
+
+const notificationSection =
+    document.getElementById("notificationSection");
+
+const telegramSection =
+    document.getElementById("telegramSection");
+
+const accountSection =
+    document.getElementById("accountSection");
+
+    const navItems = [
+
+    dashboardNav,
+
+    notificationNav,
+
+    telegramNav,
+
+    accountNav
+
+];
+
+// ========================================
 // Welcome
 // ========================================
 
@@ -1217,3 +1257,155 @@ ui.deleteBtn.addEventListener(
     }
 
 );
+
+// ========================================
+// Sidebar Navigation
+// ========================================
+
+dashboardNav.addEventListener(
+
+    "click",
+
+    () => {
+
+        dashboardSection.scrollIntoView({
+
+            behavior: "smooth",
+
+            block: "start"
+
+        });
+
+    }
+
+);
+
+notificationNav.addEventListener(
+
+    "click",
+
+    () => {
+
+        notificationSection.scrollIntoView({
+
+            behavior: "smooth",
+
+            block: "center"
+
+        });
+
+    }
+
+);
+
+telegramNav.addEventListener(
+
+    "click",
+
+    () => {
+
+        telegramSection.scrollIntoView({
+
+            behavior: "smooth",
+
+            block: "center"
+
+        });
+
+    }
+
+);
+
+accountNav.addEventListener(
+
+    "click",
+
+    () => {
+
+        accountSection.scrollIntoView({
+
+            behavior: "smooth",
+
+            block: "center"
+
+        });
+
+    }
+
+);
+
+// ========================================
+// Active Sidebar Highlight
+// ========================================
+
+function setActiveNav(activeNav) {
+
+    navItems.forEach(item =>
+
+        item.classList.remove("active")
+
+    );
+
+    activeNav.classList.add("active");
+
+}
+
+const observer = new IntersectionObserver(
+
+    entries => {
+
+        entries.forEach(entry => {
+
+            if (!entry.isIntersecting) {
+
+                return;
+
+            }
+
+            switch (entry.target.id) {
+
+                case "dashboardSection":
+
+                    setActiveNav(dashboardNav);
+
+                    break;
+
+                case "notificationSection":
+
+                    setActiveNav(notificationNav);
+
+                    break;
+
+                case "telegramSection":
+
+                    setActiveNav(telegramNav);
+
+                    break;
+
+                case "accountSection":
+
+                    setActiveNav(accountNav);
+
+                    break;
+
+            }
+
+        });
+
+    },
+
+    {
+
+        threshold: 0.35
+
+    }
+
+);
+
+observer.observe(dashboardSection);
+
+observer.observe(notificationSection);
+
+observer.observe(telegramSection);
+
+observer.observe(accountSection);

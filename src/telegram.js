@@ -2,24 +2,81 @@ const TelegramBot = require("node-telegram-bot-api");
 
 const bot = new TelegramBot(process.env.BOT_TOKEN);
 
-async function sendNotification(chatId, productName, currentStock) {
-  try {
-    await bot.sendMessage(
+async function sendNotification(
+
     chatId,
-    `🚨 Amul Stock Alert
 
-📦 ${productName}
+    product,
 
-📊 Quantity Available: ${currentStock}`
-);
+    pincode
 
-    console.log("Telegram notification sent.");
-  } catch (err) {
-    console.error(err.response?.body || err);
-  }
+) {
+
+    try {
+
+        const parts = product.name.split(",");
+
+const productTitle = parts[0];
+
+const productDetails = parts
+
+                .slice(1)
+
+                .join(",")
+
+                .trim();
+
+        const message = `
+🚨 <b>Stock Alert!</b>
+
+📦 <b>${productTitle}</b>
+${productDetails}
+
+📍 <b>Pincode - ${pincode}</b>
+
+📦 <b>Available - ${product.inventory_quantity}</b>
+
+🛒 <a href="${product.url}">Buy Now</a>
+`;
+
+        await bot.sendMessage(
+
+            chatId,
+
+            message,
+
+            {
+
+                parse_mode: "HTML",
+
+                disable_web_page_preview: true
+
+            }
+
+        );
+
+        console.log(
+
+            "Telegram notification sent."
+
+        );
+
+    }
+
+    catch (err) {
+
+        console.error(
+
+            err.response?.body || err
+
+        );
+
+    }
+
 }
 
 module.exports = {
-  sendNotification,
-};
 
+    sendNotification
+
+};

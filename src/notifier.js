@@ -44,13 +44,13 @@ async function shouldNotify(
 
         await sendNotification(
 
-            chatId,
+    chatId,
 
-            product.name,
+    product,
 
-            currentStock
+    pincode
 
-        );
+);
 
         console.log(
 

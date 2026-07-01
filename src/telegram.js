@@ -32,11 +32,11 @@ const productDetails = parts
 📦 <b>${productTitle}</b>
 ${productDetails}
 
-📍 <b>Pincode - ${pincode}</b>
+📍 Pincode - <b>${pincode}</b>
 
-📦 <b>Available - ${product.inventory_quantity}</b>
+📦 Available Quantity - <b>${product.inventory_quantity}</b>
 
-🛒 <a href="${product.url}">Buy Now</a>
+🛒 <a href="${product.url}"><b>Buy Now</b></a>
 `;
 
         await bot.sendMessage(

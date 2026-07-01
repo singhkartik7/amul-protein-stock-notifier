@@ -536,6 +536,56 @@ ${expiry.toLocaleDateString(
 
 }
 
+async function checkTelegramStatus() {
+
+    try {
+
+        const response = await fetch(
+
+            `${API_URL}/preferences`,
+
+            {
+
+                headers: getAuthHeaders()
+
+            }
+
+        );
+
+        if (!response.ok) {
+
+            return false;
+
+        }
+
+        const data = await response.json();
+
+        if (data.chatId) {
+
+            ui.telegramStatus.innerHTML =
+
+                "🟢 Connected";
+
+            ui.telegramBtn.textContent =
+
+                "Reconnect Telegram";
+
+            return true;
+
+        }
+
+        return false;
+
+    }
+
+    catch {
+
+        return false;
+
+    }
+
+}
+
 // ========================================
 // Initialize Dashboard
 // ========================================
@@ -909,21 +959,9 @@ ui.telegramBtn.addEventListener(
 
                         attempts++;
 
-                        await loadPreferences();
+                        const connected = await checkTelegramStatus();
 
-                        if (
-
-                            ui.telegramStatus
-
-                                .textContent
-
-                                .includes(
-
-                                    "Connected"
-
-                                )
-
-                        ) {
+                        if (connected) {
 
                             clearInterval(
 

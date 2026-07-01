@@ -9,7 +9,7 @@ const { processProducts } = require("./products");
 const { shouldNotify } = require("./notifier");
 const { sendNotification } = require("./telegram");
 
-const { getProductLinks } = require("./productLinks");
+
 
 
 const {
@@ -92,10 +92,7 @@ async function checkStock() {
                     page,
                     pincode
                 );
-                const productLinks = await getProductLinks(page);
-
-console.log(productLinks);
-console.log(Object.keys(productLinks).length);
+                
 
                 const response =
                     await page.waitForResponse(

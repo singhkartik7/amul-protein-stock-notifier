@@ -1,47 +1,33 @@
-async function getProductLinks(page) {
+function generateProductUrl(productName) {
 
-    const productLinks = await page.evaluate(() => {
+    const slug = productName
 
-        const map = {};
+        .toLowerCase()
 
-        document.querySelectorAll("a").forEach(link => {
+        .replace(/\|/g, "-or-")
 
-            const href = link.href;
+        .replace(/,/g, "")
 
-            if (!href.includes("/product/")) {
+        .replace(/\//g, "-")
 
-                return;
+        .replace(/\+/g, "-plus-")
 
-            }
+        .replace(/&/g, "-and-")
 
-            const nameElement = link.querySelector("h3,h4,h5,p");
+        .replace(/\s+/g, "-")
 
-            if (!nameElement) {
+        .replace(/[^a-z0-9-]/g, "")
 
-                return;
+        .replace(/-+/g, "-")
 
-            }
+        .replace(/^-|-$/g, "");
 
-            const name = nameElement.innerText.trim();
-
-            if (name) {
-
-                map[name] = href;
-
-            }
-
-        });
-
-        return map;
-
-    });
-
-    return productLinks;
+    return `https://shop.amul.com/en/product/${slug}`;
 
 }
 
 module.exports = {
 
-    getProductLinks
+    generateProductUrl
 
 };

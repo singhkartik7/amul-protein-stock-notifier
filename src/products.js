@@ -1,3 +1,6 @@
+const {
+    generateProductUrl
+} = require("./productLinks");
 async function processProducts(
 
     data,
@@ -39,6 +42,9 @@ async function processProducts(
                 `${product.name} : ${product.inventory_quantity}`
 
             );
+            product.url = generateProductUrl(product.name);
+
+console.log(product.url);
 
             await shouldNotify(
 

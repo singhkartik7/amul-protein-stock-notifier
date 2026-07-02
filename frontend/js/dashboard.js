@@ -29,7 +29,7 @@ const ui = {
         document.getElementById("productsContainer"),
 
     notifyDays:
-        document.getElementById("notifyDays"),
+        document.getElementById("notifyDuration"),
 
     notificationStatus:
         document.getElementById("notificationStatus"),
@@ -44,10 +44,10 @@ const ui = {
         document.getElementById("resetBtn"),
 
     activateBtn:
-        document.getElementById("activateNotificationBtn"),
+        document.getElementById("activateBtn"),
 
     stopBtn:
-        document.getElementById("stopNotificationBtn"),
+        document.getElementById("stopBtn"),
 
     telegramBtn:
         document.getElementById("telegramBtn"),
@@ -59,52 +59,13 @@ const ui = {
         document.getElementById("logoutBtn"),
 
     deleteBtn:
-        document.getElementById("deleteBtn"),
+        document.getElementById("deleteAccountBtn"),
 
     toast:
         document.getElementById("toast")
 
 };
 
-// ========================================
-// Sidebar Navigation
-// ========================================
-
-const dashboardNav =
-    document.getElementById("dashboardNav");
-
-const notificationNav =
-    document.getElementById("notificationNav");
-
-const telegramNav =
-    document.getElementById("telegramNav");
-
-const accountNav =
-    document.getElementById("accountNav");
-
-const dashboardSection =
-    document.getElementById("dashboardSection");
-
-const notificationSection =
-    document.getElementById("notificationSection");
-
-const telegramSection =
-    document.getElementById("telegramSection");
-
-const accountSection =
-    document.getElementById("accountSection");
-
-    const navItems = [
-
-    dashboardNav,
-
-    notificationNav,
-
-    telegramNav,
-
-    accountNav
-
-];
 
 // ========================================
 // Welcome
@@ -124,6 +85,8 @@ if (fullName) {
 // ========================================
 
 let selectedProducts = [];
+let preferencesSaved = false;
+let telegramConnected = false;
 
 // ========================================
 // Helper Functions
@@ -153,6 +116,39 @@ function showToast(message) {
 
     }, 2500);
 
+}
+function updateButtonStates() {
+
+    const hasPincode =
+        ui.pincode.value.trim().length === 6;
+
+    const hasProducts =
+        selectedProducts.length > 0;
+
+    ui.saveBtn.disabled =
+        !(hasPincode && hasProducts);
+
+ui.saveBtn.textContent =
+    preferencesSaved
+        ? "💾 Update Preferences"
+        : "💾 Save Preferences";
+
+        ui.resetBtn.disabled =
+    !preferencesSaved;
+
+    ui.telegramBtn.disabled =
+        !preferencesSaved;
+
+    ui.activateBtn.disabled =
+        !preferencesSaved ||
+        !telegramConnected;
+  
+        ui.notifyDays.disabled =
+    !preferencesSaved ||
+    !telegramConnected;
+
+ui.disconnectBtn.disabled =
+    !telegramConnected;
 }
 // ========================================
 // Products
@@ -287,7 +283,7 @@ async function loadProducts() {
                         );
 
                     }
-
+updateButtonStates();
                 }
 
             );
@@ -417,25 +413,41 @@ async function loadPreferences() {
 
         if (data.chatId) {
 
-            ui.telegramStatus.innerHTML =
+    if (data.notifyUntil && new Date(data.notifyUntil) > new Date()) {
 
-                "🟢 Connected";
+        ui.telegramStatus.innerHTML = `
+<div><strong>🟢 Telegram Connected</strong></div>
+<div>You're ready to receive stock alerts.</div>
+`;
 
-            ui.telegramBtn.textContent =
+    } else {
 
-                "Reconnect Telegram";
+        ui.telegramStatus.innerHTML = `
+<div><strong>🟢 Telegram Connected</strong></div>
+<div>✅ Next: Activate Notifications</div>
+`;
 
-        }
+    }
+
+    ui.telegramBtn.textContent = "Reconnect Telegram";
+    ui.disconnectBtn.disabled = false;
+
+}
 
         else {
 
-            ui.telegramStatus.innerHTML =
+            ui.telegramStatus.innerHTML = `
+ <div><strong>🔴Telegram Not Connected</strong></div>
 
-                "🔴 Not Connected";
+
+<div>Connect Telegram to receive stock alerts.</div>
+`;
 
             ui.telegramBtn.textContent =
 
                 "Connect Telegram";
+                ui.disconnectBtn.disabled = true;
+                
 
         }
 
@@ -445,9 +457,16 @@ async function loadPreferences() {
 
         if (!data.notifyUntil) {
 
-            ui.notificationStatus.innerHTML =
+           ui.notificationStatus.innerHTML = `
+ <div><strong>🔴Notifications Inactive</strong></div>
 
-                "🔴 Notifications Stopped";
+
+<div>Click <strong>Activate Notifications</strong> to start monitoring.</div>
+`;
+
+ui.activateBtn.textContent =
+    "🔔 Activate Notifications";
+    ui.stopBtn.disabled = true;
 
         }
 
@@ -463,10 +482,16 @@ async function loadPreferences() {
 
             if (expiry <= now) {
 
-                ui.notificationStatus.innerHTML =
+                ui.notificationStatus.innerHTML = `
+ <div><strong>🟡Notifications Expired</strong></div>
 
-                    "🟡 Notifications Expired";
 
+
+<div>Click <strong>Activate Notifications</strong> to continue monitoring.</div>
+`;
+ui.activateBtn.textContent =
+    "🔔 Activate Notifications";
+    ui.stopBtn.disabled = true;
             }
 
             else {
@@ -480,11 +505,11 @@ async function loadPreferences() {
                 );
                 ui.notificationStatus.innerHTML = `
 
-🟢 <strong>Notifications Active</strong>
+ <div><strong>🟢Notifications Active</strong></div>
 
-<br><br>
 
-📅 Expires on:
+
+<div>📅 Expires on:
 
 ${expiry.toLocaleDateString(
 
@@ -501,8 +526,8 @@ ${expiry.toLocaleDateString(
     }
 
 )}
-
-<br><br>
+</div>
+<div>
 
 ⏳ ${remainingDays} day${
 
@@ -512,14 +537,25 @@ ${expiry.toLocaleDateString(
 
         : ""
 
-} remaining
+} remaining</div>
 
 `;
+
+ui.activateBtn.textContent =
+    "🔄 Extend Notifications";
+    ui.stopBtn.disabled = false;
 
             }
 
         }
+preferencesSaved =
+    !!data.pincode &&
+    data.products.length > 0;
 
+telegramConnected =
+    !!data.chatId;
+
+updateButtonStates();
     }
 
     catch (err) {
@@ -569,6 +605,9 @@ async function checkTelegramStatus() {
             ui.telegramBtn.textContent =
 
                 "Reconnect Telegram";
+                telegramConnected = true;
+preferencesSaved = true;
+updateButtonStates();
 
             return true;
 
@@ -599,6 +638,8 @@ async function initialize() {
 }
 
 initialize();
+ui.pincode.addEventListener("input", updateButtonStates);
+
 // ========================================
 // Save Preferences
 // ========================================
@@ -641,7 +682,7 @@ ui.saveBtn.addEventListener(
 
         ui.saveBtn.textContent =
 
-            "Saving...";
+            "⏳ Saving...";
 
         try {
 
@@ -683,13 +724,13 @@ ui.saveBtn.addEventListener(
 
             }
 
-            showToast(
-
-                "✅ Preferences saved."
-
-            );
-
             await loadPreferences();
+
+showToast(
+    telegramConnected
+        ? "✅ Preferences saved. Next: Activate Notifications."
+        : "✅ Preferences saved. Next: Connect Telegram."
+);
 
         }
 
@@ -707,11 +748,7 @@ ui.saveBtn.addEventListener(
 
         finally {
 
-            ui.saveBtn.disabled = false;
-
-            ui.saveBtn.textContent =
-
-                "Save Preferences";
+           updateButtonStates();
 
         }
 
@@ -762,6 +799,9 @@ ui.activateBtn.addEventListener(
 
         );
 
+        ui.activateBtn.disabled = true;
+ui.activateBtn.textContent = "⏳ Activating...";
+
         try {
 
             const response =
@@ -802,11 +842,9 @@ ui.activateBtn.addEventListener(
 
             }
 
-            showToast(
-
-                "✅ Notifications activated."
-
-            );
+           showToast(
+    "🎉 You're all set! We'll notify you when your selected products are back in stock."
+);
 
             await loadPreferences();
 
@@ -816,6 +854,11 @@ ui.activateBtn.addEventListener(
 
             console.error(err);
 
+            updateButtonStates();
+
+    ui.activateBtn.textContent =
+        "🔔 Activate Notifications";
+
             showToast(
 
                 "❌ Unable to activate notifications."
@@ -823,6 +866,7 @@ ui.activateBtn.addEventListener(
             );
 
         }
+        
 
     }
 
@@ -837,7 +881,8 @@ ui.stopBtn.addEventListener(
     "click",
 
     async () => {
-
+ui.stopBtn.disabled = true;
+ui.stopBtn.textContent = "⏳ Stopping...";
         try {
 
             const response =
@@ -872,20 +917,21 @@ ui.stopBtn.addEventListener(
 
             }
 
-            showToast(
-
-                "✅ Notifications stopped."
-
-            );
+           showToast(
+    "🔕 Notifications stopped. You won't receive stock alerts until you activate them again."
+);
 
             await loadPreferences();
+            ui.stopBtn.textContent = "Stop";
 
         }
 
         catch (err) {
 
             console.error(err);
+updateButtonStates();
 
+ui.stopBtn.textContent = "Stop";
             showToast(
 
                 "❌ Unable to stop notifications."
@@ -906,7 +952,8 @@ ui.telegramBtn.addEventListener(
     "click",
 
     async () => {
-
+ui.telegramBtn.disabled = true;
+ui.telegramBtn.textContent = "⏳ Opening Telegram...";
         try {
 
             const response =
@@ -949,6 +996,8 @@ ui.telegramBtn.addEventListener(
 
             );
 
+            ui.telegramBtn.textContent = "Waiting for connection...";
+
             let attempts = 0;
 
             const interval =
@@ -961,23 +1010,20 @@ ui.telegramBtn.addEventListener(
 
                         const connected = await checkTelegramStatus();
 
-                        if (connected) {
+                       if (connected) {
 
-                            clearInterval(
+    clearInterval(interval);
 
-                                interval
+    await loadPreferences();
+    ui.telegramBtn.textContent = "Reconnect Telegram";
 
-                            );
+    showToast(
+        "✅ Telegram connected. You can now activate notifications."
+    );
 
-                            showToast(
+    return;
 
-                                "✅ Telegram connected."
-
-                            );
-
-                            return;
-
-                        }
+}
 
                         if (
 
@@ -990,7 +1036,12 @@ ui.telegramBtn.addEventListener(
                                 interval
 
                             );
+updateButtonStates();
 
+ui.telegramBtn.textContent =
+    telegramConnected
+        ? "Reconnect Telegram"
+        : "Connect Telegram";
                             showToast(
 
                                 "❌ Telegram connection timed out."
@@ -1010,6 +1061,13 @@ ui.telegramBtn.addEventListener(
         catch (err) {
 
             console.error(err);
+
+    updateButtonStates();
+
+    ui.telegramBtn.textContent =
+        telegramConnected
+            ? "Reconnect Telegram"
+            : "Connect Telegram";
 
             showToast(
 
@@ -1032,7 +1090,8 @@ ui.disconnectBtn.addEventListener(
     "click",
 
     async () => {
-
+ui.disconnectBtn.disabled = true;
+ui.disconnectBtn.textContent = "⏳ Disconnecting...";
         try {
 
             const response =
@@ -1069,13 +1128,29 @@ ui.disconnectBtn.addEventListener(
 
             }
 
-            ui.telegramStatus.textContent =
+            ui.telegramStatus.innerHTML = `
+ <div><strong>🔴Telegram Not Connected</strong></div>
 
-                "🔴 Not Connected";
+
+
+<div>Connect Telegram to receive stock alerts.</div>
+`;
 
             ui.telegramBtn.textContent =
 
                 "Connect Telegram";
+                ui.disconnectBtn.disabled = true;
+                telegramConnected = false;
+
+updateButtonStates();
+
+ui.notificationStatus.innerHTML = `
+<div><strong>🔴 Notifications Unavailable</strong></div>
+<div>Connect Telegram to activate notifications.</div>
+`;
+
+ui.activateBtn.textContent = "🔔 Activate Notifications";
+ui.stopBtn.disabled = true;
 
             showToast(
 
@@ -1083,12 +1158,16 @@ ui.disconnectBtn.addEventListener(
 
             );
 
+            ui.disconnectBtn.textContent = "Disconnect";
+
         }
 
         catch (err) {
 
             console.error(err);
+updateButtonStates();
 
+ui.disconnectBtn.textContent = "Disconnect";
             showToast(
 
                 "❌ Unable to disconnect Telegram."
@@ -1163,16 +1242,18 @@ ui.resetBtn.addEventListener(
             selectedProducts = [];
 
             ui.pincode.value = "";
+            preferencesSaved = false;
+telegramConnected = false;
+
+updateButtonStates();
 
             await loadPreferences();
 
             await loadProducts();
 
             showToast(
-
-                "✅ Preferences reset."
-
-            );
+    "🔄 Preferences reset. Configure your preferences to start monitoring again."
+);
 
         }
 
@@ -1296,154 +1377,3 @@ ui.deleteBtn.addEventListener(
 
 );
 
-// ========================================
-// Sidebar Navigation
-// ========================================
-
-dashboardNav.addEventListener(
-
-    "click",
-
-    () => {
-
-        dashboardSection.scrollIntoView({
-
-            behavior: "smooth",
-
-            block: "start"
-
-        });
-
-    }
-
-);
-
-notificationNav.addEventListener(
-
-    "click",
-
-    () => {
-
-        notificationSection.scrollIntoView({
-
-            behavior: "smooth",
-
-            block: "center"
-
-        });
-
-    }
-
-);
-
-telegramNav.addEventListener(
-
-    "click",
-
-    () => {
-
-        telegramSection.scrollIntoView({
-
-            behavior: "smooth",
-
-            block: "center"
-
-        });
-
-    }
-
-);
-
-accountNav.addEventListener(
-
-    "click",
-
-    () => {
-
-        accountSection.scrollIntoView({
-
-            behavior: "smooth",
-
-            block: "center"
-
-        });
-
-    }
-
-);
-
-// ========================================
-// Active Sidebar Highlight
-// ========================================
-
-function setActiveNav(activeNav) {
-
-    navItems.forEach(item =>
-
-        item.classList.remove("active")
-
-    );
-
-    activeNav.classList.add("active");
-
-}
-
-const observer = new IntersectionObserver(
-
-    entries => {
-
-        entries.forEach(entry => {
-
-            if (!entry.isIntersecting) {
-
-                return;
-
-            }
-
-            switch (entry.target.id) {
-
-                case "dashboardSection":
-
-                    setActiveNav(dashboardNav);
-
-                    break;
-
-                case "notificationSection":
-
-                    setActiveNav(notificationNav);
-
-                    break;
-
-                case "telegramSection":
-
-                    setActiveNav(telegramNav);
-
-                    break;
-
-                case "accountSection":
-
-                    setActiveNav(accountNav);
-
-                    break;
-
-            }
-
-        });
-
-    },
-
-    {
-
-        threshold: 0.35
-
-    }
-
-);
-
-observer.observe(dashboardSection);
-
-observer.observe(notificationSection);
-
-observer.observe(telegramSection);
-
-observer.observe(accountSection);

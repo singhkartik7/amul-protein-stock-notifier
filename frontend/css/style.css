@@ -241,6 +241,26 @@ section{
 
 }
 
+.btn:disabled{
+
+    opacity:.55;
+
+    cursor:not-allowed;
+
+    transform:none;
+
+    box-shadow:none;
+
+}
+
+.btn:disabled:hover{
+
+    transform:none;
+
+    box-shadow:none;
+
+}
+
 .btn-primary{
 
     background:var(--primary);
@@ -903,7 +923,7 @@ input::placeholder{
 
     display:grid;
 
-    grid-template-columns:repeat(5,1fr);
+    grid-template-columns:repeat(3,1fr);
 
     gap:28px;
 
@@ -2078,168 +2098,12 @@ footer p{
 
 .dashboard{
 
-    display:grid;
-
-    grid-template-columns:280px 1fr;
-
     min-height:100vh;
 
     background:var(--bg);
 
 }
 
-/* =====================================================
-   SIDEBAR
-===================================================== */
-
-.sidebar{
-
-    background:#0F172A;
-
-    border-right:1px solid rgba(255,255,255,.05);
-
-    padding:35px 25px;
-
-    display:flex;
-
-    flex-direction:column;
-
-    justify-content:space-between;
-
-    position:sticky;
-
-    top:0;
-
-    height:100vh;
-
-}
-
-.brand{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:18px;
-
-}
-
-.brandLogo{
-
-    width:64px;
-
-    height:64px;
-
-    border-radius:18px;
-
-    background:linear-gradient(
-        135deg,
-        var(--primary),
-        #0EA5E9
-    );
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    font-size:1.9rem;
-
-    box-shadow:var(--shadow-md);
-
-}
-
-.brand h2{
-
-    font-size:1.35rem;
-
-    margin:0;
-
-}
-
-.brand p{
-
-    margin-top:4px;
-
-    color:var(--text-muted);
-
-    font-size:.95rem;
-
-}
-
-.sidebarNav{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:16px;
-
-    margin-top:60px;
-
-}
-
-.navItem{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:15px;
-
-    padding:16px 18px;
-
-    border-radius:14px;
-
-    cursor:pointer;
-
-    transition:
-    background .25s ease,
-    color .25s ease,
-    transform .25s ease;
-
-    color:var(--text-light);
-
-    font-weight:600;
-
-}
-
-.navItem:hover{
-
-    background:rgba(20,184,166,.08);
-
-    color:white;
-
-    transform:translateX(4px);
-
-}
-
-.navItem.active{
-
-    background:rgba(20,184,166,.14);
-
-    color:white;
-
-    border:1px solid rgba(20,184,166,.25);
-
-}
-
-.sidebarBottom{
-
-    color:var(--text-muted);
-
-    font-size:.9rem;
-
-    line-height:1.7;
-
-}
-
-.sidebarBottom strong{
-
-    color:white;
-
-}
 
 /* =====================================================
    MAIN CONTENT
@@ -2247,7 +2111,11 @@ footer p{
 
 .dashboardMain{
 
-    padding:45px;
+    max-width:1200px;
+
+    margin:0 auto;
+
+    padding:45px 30px;
 
 }
 
@@ -2288,9 +2156,9 @@ footer p{
 
     grid-template-columns:repeat(2,1fr);
 
-    gap:28px;
+    gap:24px;
 
-    margin-bottom:35px;
+    margin-top:30px;
 
 }
 
@@ -2343,6 +2211,13 @@ footer p{
     transition:.3s;
 
     box-shadow:var(--shadow-sm);
+
+}
+
+.telegramCard,
+.notificationCard{
+
+    padding:24px;
 
 }
 
@@ -2403,7 +2278,7 @@ footer p{
 
     display:grid;
 
-    grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+    grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
 
     gap:22px;
 
@@ -2490,25 +2365,27 @@ footer p{
 
     display:flex;
 
-    align-items:center;
+    flex-direction:column;
 
     justify-content:center;
 
+    align-items:center;
+
     text-align:center;
 
-    min-height:70px;
+    gap:10px;
 
-    margin-top:20px;
+    min-height:120px;
 
     padding:18px;
+
+    margin-top:12px;
 
     border-radius:16px;
 
     background:rgba(255,255,255,.04);
 
     border:1px solid rgba(255,255,255,.08);
-
-    font-weight:600;
 
     color:var(--text-light);
 
@@ -2532,7 +2409,7 @@ footer p{
 
     gap:15px;
 
-    margin-top:25px;
+    margin-top:16px;
 
     flex-wrap:wrap;
 
@@ -2545,7 +2422,11 @@ footer p{
     min-width:170px;
 
 }
+.saveActions{
 
+    margin:35px 0 45px;
+
+}
 /* =====================================================
    DANGER BUTTON
 ===================================================== */
@@ -2785,35 +2666,11 @@ footer p{
 
     }
 
-    .sidebar{
+    
 
-        position:relative;
+   
 
-        height:auto;
-
-        border-right:none;
-
-        border-bottom:1px solid rgba(255,255,255,.06);
-
-        padding:25px;
-
-    }
-
-    .sidebarNav{
-
-        flex-direction:row;
-
-        flex-wrap:wrap;
-
-        margin-top:35px;
-
-    }
-
-    .sidebarBottom{
-
-        margin-top:35px;
-
-    }
+   
 
     .dashboardGrid{
 

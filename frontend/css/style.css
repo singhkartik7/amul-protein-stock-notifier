@@ -1002,6 +1002,11 @@ input::placeholder{
 /* =====================================================
    WHY SECTION
 ===================================================== */
+.whySection{
+
+    padding:110px 0;
+
+}
 
 .why{
 
@@ -1011,13 +1016,19 @@ input::placeholder{
 
     gap:70px;
 
-    align-items:center;
+   align-items:center;
 
 }
 
 .why-content p{
 
     margin-top:20px;
+
+}
+
+.why-content{
+
+    max-width:520px;
 
 }
 
@@ -2903,6 +2914,20 @@ footer p{
 .dashboardCard select:focus{
 
     transform:translateY(-1px);
+
+}
+
+.footerDisclaimer{
+
+    max-width:700px;
+
+    margin:15px auto 0;
+
+    font-size:.92rem;
+
+    color:var(--text-muted);
+
+    line-height:1.7;
 
 }
 

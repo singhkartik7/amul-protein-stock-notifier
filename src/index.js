@@ -33,8 +33,15 @@ async function checkStock() {
     }
 
     isRunning = true;
+    const totalStart = Date.now();
 
-    const browser = await launchBrowser(headless);
+    const browserStart = Date.now();
+
+const browser = await launchBrowser(headless);
+
+console.log(
+`Browser Launch   : ${Date.now()-browserStart} ms\n`
+);
 
     try {
 
@@ -82,18 +89,25 @@ async function checkStock() {
             try {
 
                 console.log(`Checking pincode ${pincode}`);
-
+const pinStart = Date.now();
                 const page =
                     await browser.newPage();
-
+const gotoStart = Date.now();
                 await openProteinPage(page);
 
+
+console.log(
+`   Page Load      : ${Date.now()-gotoStart} ms`
+);
+const selectStart = Date.now();
                 await selectPincode(
                     page,
                     pincode
                 );
-                
-
+                console.log(
+`   Select Pincode : ${Date.now()-selectStart} ms`
+);
+const apiStart = Date.now();
                 const response =
                     await page.waitForResponse(
 
@@ -111,8 +125,11 @@ async function checkStock() {
 
                 const data =
                     await response.json();
+                    console.log(
+`   API Response   : ${Date.now()-apiStart} ms`
+);
 
-
+const processStart = Date.now();
                 productsFound += await processProducts(
 
                     data,
@@ -128,8 +145,14 @@ async function checkStock() {
                     pincode
 
                 );
-
-                await page.close();
+console.log(
+`   Process Data   : ${Date.now()-processStart} ms`
+);
+            
+await page.close();
+console.log(
+`   TOTAL          : ${Date.now()-pinStart} ms\n`
+);    
 
             }
 
@@ -149,7 +172,13 @@ async function checkStock() {
 
         console.log(
 
-            `Products Found: ${productsFound}`
+`====================================
+Stock Check Finished
+====================================
+Time: ${(Date.now()-totalStart)/1000} sec
+Products Found: ${productsFound}
+Pincodes: ${Object.keys(activeGroupedPreferences).length}
+====================================`
 
         );
 

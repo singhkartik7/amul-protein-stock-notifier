@@ -52,11 +52,7 @@ async function shouldNotify(
 
 );
 
-        console.log(
-
-            `Notification sent for ${product.name}`
-
-        );
+        
 
     }
 

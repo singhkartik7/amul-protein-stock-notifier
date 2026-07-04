@@ -37,11 +37,7 @@ async function processProducts(
 
             productsFound++;
 
-            console.log(
-
-                `${product.name} : ${product.inventory_quantity}`
-
-            );
+            
             product.url = generateProductUrl(product.name);
 
 

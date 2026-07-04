@@ -1,11 +1,24 @@
 async function selectPincode(page, pincode) {
 
+    await page.waitForSelector("#search", {
+        state: "visible"
+    });
+
     let t = Date.now();
 
-    await page.fill("#search", pincode);
+    const input = page.locator("#search");
+
+    await input.click();
+
+    await page.keyboard.press("Control+A");
+    await page.keyboard.press("Backspace");
+
+    await page.keyboard.type(pincode, {
+        delay: 0
+    });
 
     console.log(
-        `      Fill: ${Date.now() - t} ms`
+        `      Type: ${Date.now() - t} ms`
     );
 
     t = Date.now();
@@ -26,6 +39,10 @@ async function selectPincode(page, pincode) {
         `      Click: ${Date.now() - t} ms`
     );
 }
+
+module.exports = {
+    selectPincode,
+};
 
 module.exports = {
   selectPincode,

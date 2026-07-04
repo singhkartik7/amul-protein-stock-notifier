@@ -1,15 +1,30 @@
 async function selectPincode(page, pincode) {
-  await page.fill("#search", pincode);
 
-  
+    let t = Date.now();
 
-  await page.waitForSelector("a.searchitem-name", {
-    timeout: 10000,
-  });
+    await page.fill("#search", pincode);
 
- 
+    console.log(
+        `      Fill: ${Date.now() - t} ms`
+    );
 
-  await page.click("a.searchitem-name");
+    t = Date.now();
+
+    await page.waitForSelector("a.searchitem-name", {
+        timeout: 10000,
+    });
+
+    console.log(
+        `      Suggestion: ${Date.now() - t} ms`
+    );
+
+    t = Date.now();
+
+    await page.click("a.searchitem-name");
+
+    console.log(
+        `      Click: ${Date.now() - t} ms`
+    );
 }
 
 module.exports = {

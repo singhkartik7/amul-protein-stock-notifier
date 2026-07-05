@@ -59,7 +59,8 @@ async function savePreference(
     store_id = $2,
     chat_id = $3
 
-             WHERE user_id = $3`,
+
+             WHERE user_id = $4`,
 
             [
     pincode,

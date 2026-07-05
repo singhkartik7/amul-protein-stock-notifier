@@ -12,9 +12,7 @@ const {
     loadStockMap
 } = require("./models/stockModel");
 
-const {
-    getSessionCache
-} = require("./services/cacheService");
+
 
 const {
     getProducts
@@ -72,7 +70,7 @@ async function checkStock() {
         let productsFound = 0;
 
         for (const [storeId, group] of Object.entries(activeGroupedPreferences)) {
- const session = getSessionCache();
+
             try {
 
                 console.log(`Checking store ${storeId}`);
@@ -83,9 +81,7 @@ async function checkStock() {
 
                     storeId,
 
-                    session.cookieHeader,
-
-                    session.productHeaders
+                   
 
                 );
 

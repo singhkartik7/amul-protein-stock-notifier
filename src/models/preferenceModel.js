@@ -3,10 +3,7 @@ const {
     getStoreId
 } = require("../services/pincodeService");
 
-const {
-    getSessionCache,
-    getStoreMapCache
-} = require("../services/cacheService");
+
 
 async function getPreferenceByUserId(userId) {
 
@@ -32,13 +29,13 @@ async function savePreference(
 
     if (pincode) {
 
-        const session = getSessionCache();
+        
 
         const storeMap = getStoreMapCache();
 
         const store = await getStoreId(
             pincode,
-            session.cookieHeader,
+            
             storeMap
         );
 

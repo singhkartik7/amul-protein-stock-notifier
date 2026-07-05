@@ -9,7 +9,7 @@ async function initializeCache() {
     session = await getSession();
 
     storeMap = await getStoreMap(
-        session.cookieHeader
+        session.client
     );
 
     console.log("✅ Cache initialized");
@@ -20,7 +20,9 @@ function getSessionCache() {
 
     if (!session) {
 
-        throw new Error("Session cache not initialized.");
+        throw new Error(
+            "Session cache not initialized."
+        );
 
     }
 
@@ -32,7 +34,9 @@ function getStoreMapCache() {
 
     if (!storeMap) {
 
-        throw new Error("Store map cache not initialized.");
+        throw new Error(
+            "Store map cache not initialized."
+        );
 
     }
 
@@ -42,9 +46,15 @@ function getStoreMapCache() {
 
 async function refreshSession() {
 
+    console.log("🔄 Refreshing session...");
+
     session = await getSession();
 
-    console.log("🔄 Session refreshed");
+    storeMap = await getStoreMap(
+        session.client
+    );
+
+    console.log("✅ Session refreshed");
 
 }
 

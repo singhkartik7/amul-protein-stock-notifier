@@ -1,88 +1,57 @@
-const { launchBrowser } = require("../browser");
-const { openProteinPage } = require("../amul");
-const { selectPincode } = require("../pincode");
+const axios = require("axios");
+const { CookieJar } = require("tough-cookie");
+const { wrapper } = require("axios-cookiejar-support");
 
 async function getSession() {
 
-    const browser = await launchBrowser(true);
+    const jar = new CookieJar();
 
-    const page = await browser.newPage();
+    const client = wrapper(
+        axios.create({
+            jar,
+            withCredentials: true
+        })
+    );
 
-    await page.route("**/*", (route) => {
+    // Open Amul homepage
+    await client.get(
+        "https://shop.amul.com/en/browse/protein"
+    );
 
-    const type = route.request().resourceType();
+    // Get session
+    const info = await client.get(
+        "https://shop.amul.com/user/info.js"
+    );
 
-    if (
+    const match = info.data.match(
+        /"tid":"([^"]+)"/
+    );
 
-        type === "image" ||
-        type === "font" ||
-        type === "media"
+    if (!match) {
 
-    ) {
-
-        return route.abort();
+        throw new Error(
+            "Could not extract session tid."
+        );
 
     }
 
-    route.continue();
-
-});
-
-    let productHeaders = null;
-    let pincodeHeaders = null;
-
-    page.on("request", request => {
-
-        if (
-            request.url().includes("ms.products") &&
-            request.url().includes("substore=")
-        ) {
-
-            productHeaders = request.headers();
-
-        }
-        if (
-    request.url().includes("/entity/pincode")
-) {
-
-    pincodeHeaders = request.headers();
-
-}
-
-    });
-
-    await openProteinPage(page);
-
-    // Any valid pincode works
-    await selectPincode(page, "302017");
-
-    await page.waitForTimeout(3000);
-
-    const cookies = await page.context().cookies();
-
-    await browser.close();
-
-   if (!productHeaders) {
-
-    throw new Error("Could not capture product headers.");
-
-}
-
-if (!pincodeHeaders) {
-
-    throw new Error("Could not capture pincode headers.");
-
-}
+    const cookies = await jar.getCookies(
+        "https://shop.amul.com"
+    );
 
     const cookieHeader = cookies
-        .map(cookie => `${cookie.name}=${cookie.value}`)
+        .map(cookie => `${cookie.key}=${cookie.value}`)
         .join("; ");
 
     return {
 
-        cookieHeader,
-        productHeaders,
-        pincodeHeaders
+        client,
+
+        jar,
+
+        sessionTid: match[1],
+
+        cookieHeader
 
     };
 

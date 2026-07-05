@@ -1,24 +1,10 @@
-async function getStoreMap(cookieHeader) {
+async function getStoreMap(client) {
 
-    const response = await fetch(
-        "https://shop.amul.com/ms/store/amul/cacheEntities/auto/EN/storedata.js?version=ms176132366_1781674242046",
-        {
-            headers: {
-                cookie: cookieHeader,
-                referer: "https://shop.amul.com/en/browse/protein"
-            }
-        }
+    const response = await client.get(
+        "https://shop.amul.com/ms/store/amul/cacheEntities/auto/EN/storedata.js?version=ms176132366_1781674242046"
     );
 
-    if (!response.ok) {
-
-        throw new Error(
-            `Failed to fetch storedata.js (${response.status})`
-        );
-
-    }
-
-    const text = await response.text();
+    const text = response.data;
 
     const match = text.match(
         /var\s+cacheEntities\d+\s*=\s*(\{[\s\S]*?\});/
@@ -41,6 +27,12 @@ async function getStoreMap(cookieHeader) {
         storeMap.set(
             store.alias.toLowerCase(),
             store._id
+        );
+
+        // Reverse lookup
+        storeMap.set(
+            store._id,
+            store.alias.toLowerCase()
         );
 
     }

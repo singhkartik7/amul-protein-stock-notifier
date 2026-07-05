@@ -49,8 +49,13 @@ async function getStoreId(
         );
 
     }
+return {
 
-    return storeId;
+    alias,
+
+    storeId
+
+};
 
 }
 

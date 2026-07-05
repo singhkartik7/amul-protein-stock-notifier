@@ -8,6 +8,26 @@ async function getSession() {
 
     const page = await browser.newPage();
 
+    await page.route("**/*", (route) => {
+
+    const type = route.request().resourceType();
+
+    if (
+
+        type === "image" ||
+        type === "font" ||
+        type === "media"
+
+    ) {
+
+        return route.abort();
+
+    }
+
+    route.continue();
+
+});
+
     let productHeaders = null;
     let pincodeHeaders = null;
 

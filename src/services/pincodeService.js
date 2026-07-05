@@ -2,29 +2,42 @@ const { getSessionCache } = require("./cacheService");
 
 async function getStoreId(
     pincode,
+    cookieHeader,
     storeMap
 ) {
 
-    const session = getSessionCache();
+    const headers = {
+        ...getSessionCache().pincodeHeaders,
+        cookie: cookieHeader
+    };
 
-    const response = await session.client.get(
-        "https://shop.amul.com/entity/pincode",
+    delete headers.host;
+    delete headers["content-length"];
+
+    const response = await fetch(
+        `https://shop.amul.com/entity/pincode?limit=50&filters[0][field]=pincode&filters[0][value]=${pincode}&filters[0][operator]=regex&cf_cache=1h`,
         {
-            params: {
-                limit: 50,
-                "filters[0][field]": "pincode",
-                "filters[0][value]": pincode,
-                "filters[0][operator]": "regex",
-                cf_cache: "1h"
-            },
-            headers: {
-                referer: "https://shop.amul.com/en/browse/protein",
-                accept: "application/json"
-            }
+            headers
         }
     );
 
-    const json = response.data;
+    console.log(pincode, response.status);
+
+    if (response.status === 401) {
+
+        throw new Error("SESSION_EXPIRED");
+
+    }
+
+    if (!response.ok) {
+
+        throw new Error(
+            `Failed to fetch pincode (${response.status})`
+        );
+
+    }
+
+    const json = await response.json();
 
     if (!json.records || json.records.length === 0) {
 
@@ -47,17 +60,12 @@ async function getStoreId(
     }
 
     return {
-
         alias,
-
         storeId
-
     };
 
 }
 
 module.exports = {
-
     getStoreId
-
 };

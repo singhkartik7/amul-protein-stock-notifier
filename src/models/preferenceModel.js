@@ -2,11 +2,12 @@ const pool = require("../database/db");
 const {
     getStoreId
 } = require("../services/pincodeService");
-
-
 const {
+    getSessionCache,
     getStoreMapCache
 } = require("../services/cacheService");
+
+
 
 async function getPreferenceByUserId(userId) {
 
@@ -35,10 +36,10 @@ async function savePreference(
         
 
         const storeMap = getStoreMapCache();
-
+const session = getSessionCache();
         const store = await getStoreId(
             pincode,
-            
+            session.cookieHeader,
             storeMap
         );
 

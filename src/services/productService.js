@@ -1,3 +1,7 @@
+const {
+    refreshSession
+} = require("./cacheService");
+
 async function getProducts(
     storeId,
     cookieHeader,
@@ -58,9 +62,11 @@ async function getProducts(
 
     if (response.status === 401) {
 
-        throw new Error("SESSION_EXPIRED");
+    await refreshSession();
 
-    }
+    throw new Error("SESSION_REFRESHED");
+
+}
 
     if (!response.ok) {
 

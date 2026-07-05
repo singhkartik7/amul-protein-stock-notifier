@@ -14,6 +14,9 @@ const productRoutes = require("./routes/productRoutes");
 const telegramRoutes = require("./routes/telegramRoutes");
 const directFlowTest = require("./routes/directFlowTest");
 const { startStockChecker } = require("./index");
+const {
+    initializeCache
+} = require("./services/cacheService");
 
 require("./telegramListener");
 //startStockChecker();
@@ -49,9 +52,16 @@ app.get("/health", (req, res) => {
 });
 
 const PORT = process.env.PORT || 3001;
+(async () => {
 
-app.listen(PORT, () => {
+    await initializeCache();
 
-    console.log(`Server running on port ${PORT}`);
+    app.listen(PORT, () => {
 
-});
+        console.log(
+            `Server running on ${PORT}`
+        );
+
+    });
+
+})();

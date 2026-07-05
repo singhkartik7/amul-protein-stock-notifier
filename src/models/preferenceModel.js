@@ -1,4 +1,12 @@
 const pool = require("../database/db");
+const {
+    getStoreId
+} = require("../services/pincodeService");
+
+const {
+    getSessionCache,
+    getStoreMapCache
+} = require("../services/cacheService");
 
 async function getPreferenceByUserId(userId) {
 
@@ -20,6 +28,23 @@ async function savePreference(
     pincode,
     chatId = null
 ) {
+ let storeId = null;
+
+    if (pincode) {
+
+        const session = getSessionCache();
+
+        const storeMap = getStoreMapCache();
+
+        const store = await getStoreId(
+            pincode,
+            session.cookieHeader,
+            storeMap
+        );
+
+        storeId = store.storeId;
+
+    }
 
     const existing =
         await getPreferenceByUserId(userId);
@@ -30,16 +55,18 @@ async function savePreference(
 
             `UPDATE preferences
 
-             SET pincode = $1,
-                 chat_id = $2
+            SET pincode = $1,
+    store_id = $2,
+    chat_id = $3
 
              WHERE user_id = $3`,
 
             [
-                pincode,
-                chatId,
-                userId
-            ]
+    pincode,
+    storeId,
+    chatId,
+    userId
+]
 
         );
 
@@ -53,17 +80,18 @@ async function savePreference(
 
         `INSERT INTO preferences
 
-        (user_id, pincode, chat_id)
+       (user_id, pincode, store_id, chat_id)
 
-        VALUES ($1,$2,$3)
+VALUES ($1,$2,$3,$4)
 
         RETURNING *`,
 
-        [
-            userId,
-            pincode,
-            chatId
-        ]
+       [
+    userId,
+    pincode,
+    storeId,
+    chatId
+]
 
     );
 

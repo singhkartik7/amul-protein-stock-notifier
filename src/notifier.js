@@ -1,7 +1,5 @@
 const {
-
     saveStock
-
 } = require("./models/stockModel");
 
 async function shouldNotify(
@@ -14,45 +12,39 @@ async function shouldNotify(
 
     chatId,
 
-    pincode
+    pincode,
+
+    storeId
 
 ) {
 
     const key =
-
-        `${pincode}|${product._id}`;
+        `${storeId}|${product._id}`;
 
     const currentStock =
-
         product.inventory_quantity;
 
     const previousStock =
-
         stockMap.has(key)
-
             ? stockMap.get(key)
-
             : 0;
 
     if (
 
         currentStock > 0 &&
-
         currentStock !== previousStock
 
     ) {
 
         await sendNotification(
 
-    chatId,
+            chatId,
 
-    product,
+            product,
 
-    pincode
+            pincode
 
-);
-
-        
+        );
 
     }
 
@@ -68,7 +60,7 @@ async function shouldNotify(
 
         product._id,
 
-        pincode,
+        storeId,
 
         currentStock
 

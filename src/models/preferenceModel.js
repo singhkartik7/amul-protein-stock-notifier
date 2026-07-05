@@ -145,6 +145,8 @@ async function getGroupedPreferences() {
     const result = await pool.query(`
 SELECT
 
+    preferences.store_id,
+
     preferences.pincode,
 
     preferences.chat_id,
@@ -158,68 +160,70 @@ SELECT
 FROM preferences
 
 JOIN users
-
     ON users.id = preferences.user_id
 
 LEFT JOIN tracked_products
-
     ON tracked_products.preference_id = preferences.id
 
 LEFT JOIN products
-
     ON products.id = tracked_products.product_id
 
 WHERE preferences.chat_id IS NOT NULL
+AND preferences.store_id IS NOT NULL
 
-ORDER BY preferences.pincode
+ORDER BY preferences.store_id
 
     `);
 
     const grouped = {};
 
-    for (const row of result.rows) {
+for (const row of result.rows) {
 
-        if (!grouped[row.pincode]) {
+    if (!grouped[row.store_id]) {
 
-            grouped[row.pincode] = {
-                users: []
-            };
+        grouped[row.store_id] = {
 
-        }
+            pincode: row.pincode,
 
-        let user = grouped[row.pincode].users.find(
+            users: []
 
-            u => u.email === row.email
-
-        );
-
-        if (!user) {
-
-            user = {
-
-                email: row.email,
-
-                chatId: row.chat_id,
-
-                notifyUntil: row.notify_until,
-
-                products: []
-
-            };
-
-            grouped[row.pincode].users.push(user);
-
-        }
-
-        if (row.product_name) {
-
-            user.products.push(row.product_name);
-
-        }
+        };
 
     }
 
-    return grouped;
+    let user = grouped[row.store_id].users.find(
+
+        u => u.email === row.email
+
+    );
+
+    if (!user) {
+
+        user = {
+
+            email: row.email,
+
+            chatId: row.chat_id,
+
+            notifyUntil: row.notify_until,
+
+            products: []
+
+        };
+
+        grouped[row.store_id].users.push(user);
+
+    }
+
+    if (row.product_name) {
+
+        user.products.push(row.product_name);
+
+    }
+
+}
+
+return grouped;
 
 }
 

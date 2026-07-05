@@ -1,5 +1,6 @@
 const {
-    refreshSession
+    refreshSession,
+    getSessionCache
 } = require("./cacheService");
 
 async function getProducts(
@@ -62,9 +63,21 @@ async function getProducts(
 
     if (response.status === 401) {
 
+    console.log("🔄 Refreshing session...");
+
     await refreshSession();
 
-    throw new Error("SESSION_REFRESHED");
+    const session = getSessionCache();
+
+    return await getProducts(
+
+        storeId,
+
+        session.cookieHeader,
+
+        session.productHeaders
+
+    );
 
 }
 

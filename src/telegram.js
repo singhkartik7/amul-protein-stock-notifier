@@ -65,13 +65,17 @@ ${productDetails}
 
     catch (err) {
 
-        console.error(
+    if (err.response?.body?.error_code === 401) {
 
-            err.response?.body || err
+        console.log("❌ Invalid Telegram Bot Token");
 
-        );
+        return;
 
     }
+
+    console.error(err);
+
+}
 
 }
 

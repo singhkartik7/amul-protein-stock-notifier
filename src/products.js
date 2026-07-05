@@ -1,6 +1,7 @@
 const {
     generateProductUrl
 } = require("./productLinks");
+
 async function processProducts(
 
     data,
@@ -13,7 +14,9 @@ async function processProducts(
 
     shouldNotify,
 
-    pincode
+    pincode,
+
+    storeId
 
 ) {
 
@@ -37,10 +40,7 @@ async function processProducts(
 
             productsFound++;
 
-            
             product.url = generateProductUrl(product.name);
-
-
 
             await shouldNotify(
 
@@ -52,7 +52,9 @@ async function processProducts(
 
                 user.chatId,
 
-                pincode
+                pincode,
+
+                storeId
 
             );
 

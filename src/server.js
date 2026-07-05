@@ -12,20 +12,20 @@ const authRoutes = require("./routes/authRoutes");
 const preferencesRoutes = require("./routes/preferencesRoutes");
 const productRoutes = require("./routes/productRoutes");
 const telegramRoutes = require("./routes/telegramRoutes");
-const directFlowTest = require("./routes/directFlowTest");
+
 const { startStockChecker } = require("./index");
 const {
     initializeCache
 } = require("./services/cacheService");
 
-require("./telegramListener");
-//startStockChecker();
+//require("./telegramListener");
+
 
 app.use("/auth", authRoutes);
 app.use("/preferences", preferencesRoutes);
 app.use("/products", productRoutes);
 app.use("/telegram", telegramRoutes);
-app.use("/test-direct-flow", directFlowTest);
+
 app.get("/", (req, res) => {
 
     res.json({
@@ -55,6 +55,10 @@ const PORT = process.env.PORT || 3001;
 (async () => {
 
     await initializeCache();
+
+    console.log("✅ Cache initialized");
+
+    startStockChecker();
 
     app.listen(PORT, () => {
 

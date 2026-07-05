@@ -9,6 +9,7 @@ async function getSession() {
     const page = await browser.newPage();
 
     let productHeaders = null;
+    let pincodeHeaders = null;
 
     page.on("request", request => {
 
@@ -20,6 +21,13 @@ async function getSession() {
             productHeaders = request.headers();
 
         }
+        if (
+    request.url().includes("/entity/pincode")
+) {
+
+    pincodeHeaders = request.headers();
+
+}
 
     });
 
@@ -34,11 +42,17 @@ async function getSession() {
 
     await browser.close();
 
-    if (!productHeaders) {
+   if (!productHeaders) {
 
-        throw new Error("Could not capture product headers.");
+    throw new Error("Could not capture product headers.");
 
-    }
+}
+
+if (!pincodeHeaders) {
+
+    throw new Error("Could not capture pincode headers.");
+
+}
 
     const cookieHeader = cookies
         .map(cookie => `${cookie.name}=${cookie.value}`)
@@ -47,7 +61,8 @@ async function getSession() {
     return {
 
         cookieHeader,
-        productHeaders
+        productHeaders,
+        pincodeHeaders
 
     };
 

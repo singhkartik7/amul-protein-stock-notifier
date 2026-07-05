@@ -18,7 +18,7 @@ const {
     initializeCache
 } = require("./services/cacheService");
 
-//require("./telegramListener");
+require("./telegramListener");
 
 
 app.use("/auth", authRoutes);

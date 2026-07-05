@@ -16,7 +16,7 @@ const directFlowTest = require("./routes/directFlowTest");
 const { startStockChecker } = require("./index");
 
 require("./telegramListener");
-startStockChecker();
+//startStockChecker();
 
 app.use("/auth", authRoutes);
 app.use("/preferences", preferencesRoutes);

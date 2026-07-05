@@ -108,25 +108,58 @@ const selectStart = Date.now();
 `   Select Pincode : ${Date.now()-selectStart} ms`
 );
 const apiStart = Date.now();
-                const response =
-                    await page.waitForResponse(
 
-                        response =>
+const data = await new Promise((resolve, reject) => {
 
-                            response.url().includes("ms.products") &&
+    const timeout = setTimeout(() => {
 
-                            response.status() === 200,
+        page.off("response", listener);
+        reject(new Error("Timed out waiting for products"));
 
-                        {
-                            timeout: 15000
-                        }
+    }, 15000);
 
-                    );
+    const listener = async (response) => {
 
-                const data =
-                    await response.json();
-                    console.log(
-`   API Response   : ${Date.now()-apiStart} ms`
+        try {
+
+            if (
+                response.url().includes("ms.products") &&
+                response.status() === 200
+            ) {
+
+                const json = await response.json();
+
+                // Ignore empty product responses
+                if (!json.data || json.data.length === 0) {
+                    return;
+                }
+
+                clearTimeout(timeout);
+
+                page.off("response", listener);
+console.log("✅ Products response intercepted");
+                resolve(json);
+
+            }
+
+        } catch (err) {
+
+            clearTimeout(timeout);
+
+            page.off("response", listener);
+
+            reject(err);
+
+        }
+
+    };
+
+    page.on("response", listener);
+
+});
+
+console.log(
+`   API Response   : ${Date.now() - apiStart} ms`
 );
 
 const processStart = Date.now();

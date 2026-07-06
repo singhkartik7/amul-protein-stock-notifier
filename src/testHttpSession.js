@@ -3,6 +3,7 @@ const { CookieJar } = require("tough-cookie");
 const { wrapper } = require("axios-cookiejar-support");
 const crypto = require("crypto");
 
+
 const jar = new CookieJar();
 
 const client = wrapper(
@@ -11,6 +12,17 @@ const client = wrapper(
         withCredentials: true
     })
 );
+
+client.interceptors.request.use(config => {
+
+    console.log("\n==========================");
+    console.log("REQUEST:", config.method?.toUpperCase(), config.url);
+    console.log("Headers:", config.headers);
+    console.log("==========================\n");
+
+    return config;
+
+});
 
 function calculateTid(sessionTid) {
 
@@ -45,7 +57,15 @@ async function main() {
     const info = await client.get(
         "https://shop.amul.com/user/info.js"
     );
+const cookies = await jar.getCookies(
+    "https://shop.amul.com"
+);
 
+console.log("\nCookies after user/info:");
+
+console.log(
+    cookies.map(c => `${c.key}=${c.value}`)
+);
     const match = info.data.match(/"tid":"([^"]+)"/);
 
     const sessionTid = match[1];

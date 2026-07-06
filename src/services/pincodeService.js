@@ -11,7 +11,8 @@ async function getStoreId(
     let session = getSessionCache();
 
     try {
-
+console.log("Using session:", session.sessionTid);
+console.log("Looking up pincode:", pincode);
         const response = await session.client.get(
             "https://shop.amul.com/entity/pincode",
             {
@@ -54,12 +55,18 @@ async function getStoreId(
 
             console.log("🔄 Session expired while fetching pincode...");
 
-            await refreshSession();
+            console.log("🔄 Session expired, refreshing...");
 
-            return getStoreId(
-                pincode,
-                storeMap
-            );
+await refreshSession();
+
+const newSession = getSessionCache();
+
+console.log("New session:", newSession.sessionTid);
+
+return getStoreId(
+    pincode,
+    storeMap
+);
 
         }
 

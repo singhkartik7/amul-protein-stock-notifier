@@ -44,7 +44,15 @@ await client.get(
 const info = await client.get(
     "https://shop.amul.com/user/info.js"
 );
+const debugCookies = await jar.getCookies(
+    "https://shop.amul.com"
+);
 
+console.log("\nCookies after user/info:");
+
+console.log(
+    debugCookies.map(c => `${c.key}=${c.value}`)
+);
 const match = info.data.match(
     /"tid":"([^"]+)"/
 );
@@ -52,7 +60,7 @@ const match = info.data.match(
 if (!match) {
     throw new Error("Could not extract session tid.");
 }
-
+/*try{
 // THEN warm up the pincode endpoint
 await client.get(
     "https://shop.amul.com/entity/pincode",
@@ -89,8 +97,14 @@ await client.put(
         }
     }
 );
-    
+}
+catch (err) {
 
+    console.log("SESSION INIT FAILED");
+    console.log(err.response?.status);
+    console.log(err.response?.data);
+    
+}*/
     const cookies = await jar.getCookies(
         "https://shop.amul.com"
     );

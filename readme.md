@@ -1,105 +1,127 @@
 <div align="center">
 
-# 🥛 Amul Stock Notifier
+# 🥛 Amul Protein Stock Notifier
 
-### Never Miss Your Favourite Amul Protein Products Again.
+![Node.js](https://img.shields.io/badge/Node.js-20-green)
+![Express.js](https://img.shields.io/badge/Express.js-Backend-black)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon-blue)
+![Telegram](https://img.shields.io/badge/Telegram-Bot_API-blue)
+![Status](https://img.shields.io/badge/Status-Active-success)
 
-Real-time stock monitoring with instant Telegram notifications based on your selected pincode.
+Never miss your favourite Amul Protein products again.
 
-🌐 **Live Demo:** https://amul-stock-notifier.vercel.app/index.html
+Receive instant Telegram notifications when the products you care about come back in stock.
+
+**🌐 Live Demo:** https://amul-stock-notifier.vercel.app
 
 </div>
 
 ---
 
-# 📖 About
+## About
 
-Amul Stock Notifier is a full-stack web application that automatically monitors the availability of Amul Protein products and instantly notifies users on Telegram whenever their selected products come back in stock.
+Amul Protein products often go out of stock, and checking the website multiple times a day quickly becomes frustrating.
 
-Instead of manually checking the Amul website multiple times a day, users simply select the products they want, enter their pincode, connect Telegram, and let the application monitor stock availability 24/7.
+I originally built this project to solve that problem for myself.
 
----
+Instead of manually refreshing the Amul website, users can simply select the products they want, choose their delivery pincode, connect their Telegram account, and let the application monitor stock automatically.
 
-# ✨ Features
+Whenever a selected product becomes available, the user instantly receives a Telegram notification with a direct purchase link.
 
-- 🥛 Track your favourite Amul Protein products
-- 📍 Pincode-based stock monitoring
-- 🔔 Instant Telegram stock notifications
-- 🛒 Direct Buy Now link in every notification
-- ⚡ Automated stock checking using Playwright
-- 👤 User Authentication
-- 🔐 JWT-secured API
-- 🔑 Password hashing with bcrypt
-- 🗄 PostgreSQL database hosted on Neon
-- 🛡 SQL Injection protection using parameterized queries
-- 🚦 API Rate Limiting
-- ☁️ Cloud deployment using Vercel & Render
-- 📱 Fully responsive interface
+The application groups users based on their delivery store, reducing unnecessary API requests while allowing multiple users to monitor different products from the same location.
 
 ---
 
-# 🚀 How It Works
+## Features
+
+- User authentication
+- Secure login and signup
+- Pincode based stock monitoring
+- Product specific notifications
+- Telegram integration
+- Direct purchase links in every notification
+- Automatic background stock checking
+- PostgreSQL database
+- JWT authentication
+- Password hashing using bcrypt
+- SQL Injection protection using parameterized queries
+- API rate limiting
+- Responsive user interface
+- Cloud deployment using Vercel and Render
+
+---
+
+## How It Works
 
 1. Create an account.
-2. Login to your dashboard.
+2. Log in to the dashboard.
 3. Enter your delivery pincode.
 4. Select the products you want to monitor.
 5. Save your preferences.
 6. Connect your Telegram account.
-7. Activate notifications.
-8. The stock checker continuously monitors Amul Store.
-9. As soon as stock becomes available, you instantly receive a Telegram notification with a direct purchase link.
+7. Enable notifications.
+8. The stock checker continuously monitors product availability.
+9. When stock becomes available, a Telegram notification is sent instantly with a direct purchase link.
 
 ---
 
-# 🛠 Tech Stack
+## Tech Stack
 
 | Category | Technology |
 |----------|------------|
-| Frontend | HTML5, CSS3, JavaScript |
+| Frontend | HTML, CSS, JavaScript |
 | Backend | Node.js, Express.js |
-| Database | Neon PostgreSQL |
+| Database | PostgreSQL (Neon) |
 | Authentication | JWT, bcrypt |
-| Automation | Playwright |
 | Notifications | Telegram Bot API |
 | Deployment | Vercel, Render |
 
 ---
 
-# 🔒 Security
+## Project Architecture
 
-This project follows several security best practices:
-
-- JWT Authentication
-- Password hashing using bcrypt
-- SQL Injection protection with parameterized PostgreSQL queries
-- API Rate Limiting using Express Rate Limit
-- Protected API routes
-- Environment variables for sensitive credentials
+```text
+                    ┌───────────────────────┐
+                    │      Frontend         │
+                    │ HTML • CSS • JS       │
+                    └──────────┬────────────┘
+                               │
+                               │ REST API
+                               ▼
+                    ┌───────────────────────┐
+                    │ Express.js Backend    │
+                    └──────────┬────────────┘
+                               │
+         ┌─────────────────────┼─────────────────────┐
+         │                     │                     │
+         ▼                     ▼                     ▼
+ PostgreSQL              Telegram Bot          Amul Store APIs
+ (Users & Preferences)    Notifications         Stock Checking
+```
 
 ---
 
-# 📂 Project Structure
+## Project Structure
 
 ```text
-amul-stock-notifier
+Amul_Stock_Notifier
 │
-├── frontend/
-│   ├── css/
-│   ├── js/
-│   ├── index.html
+├── frontend
+│   ├── css
+│   ├── js
+│   ├── dashboard.html
 │   ├── login.html
 │   ├── signup.html
-│   └── dashboard.html
+│   └── index.html
 │
-├── src/
-│   ├── browser/
-│   ├── middleware/
-│   ├── models/
-│   ├── routes/
-│   ├── services/
-│   ├── telegram/
-│   ├── utils/
+├── src
+│   ├── database
+│   ├── middleware
+│   ├── models
+│   ├── routes
+│   ├── services
+│   ├── telegram
+│   ├── utils
 │   ├── server.js
 │   └── index.js
 │
@@ -109,7 +131,7 @@ amul-stock-notifier
 
 ---
 
-# ⚙️ Installation
+## Installation
 
 Clone the repository
 
@@ -129,7 +151,7 @@ Install dependencies
 npm install
 ```
 
-Create a `.env` file
+Create a `.env` file in the project root.
 
 ```env
 DATABASE_URL=
@@ -141,7 +163,7 @@ BOT_TOKEN=
 PORT=
 ```
 
-Start the server
+Start the backend server
 
 ```bash
 npm start
@@ -149,45 +171,104 @@ npm start
 
 ---
 
-# 🌐 Live Demo
+## Security
 
-Visit the application here:
+The application follows several security best practices to protect user accounts and sensitive information.
 
-### https://amul-stock-notifier.vercel.app/index.html
+- JWT based authentication
+- Password hashing using bcrypt
+- Parameterized PostgreSQL queries to prevent SQL Injection
+- Protected API routes
+- Environment variables for sensitive credentials
+- API rate limiting
+- Secure password storage
 
 ---
 
-# 🔮 Future Improvements
+## Challenges Solved
+
+Building this project involved solving several interesting engineering problems beyond simply checking product stock.
+
+### Pincode to Store Mapping
+
+The Amul APIs operate using internal store IDs rather than user pincodes. A custom lookup system was built to convert delivery pincodes into their corresponding store IDs before monitoring stock.
+
+---
+
+### Reducing API Requests
+
+Instead of checking products separately for every user, users are grouped by store.
+
+This allows a single API request to serve multiple users while still sending personalized notifications based on each user's selected products.
+
+---
+
+### Notification Management
+
+The application keeps track of previously detected stock quantities to ensure users only receive notifications when stock actually changes, preventing duplicate alerts.
+
+---
+
+### Database Migration
+
+The project originally stored data in JSON files.
+
+As the application grew, it was migrated completely to PostgreSQL, making it more reliable, scalable and easier to maintain.
+
+---
+
+## Future Improvements
+
+Some features planned for future versions include:
 
 - Email notifications
 - WhatsApp notifications
 - Multiple pincode tracking
-- Product price history
+- Product availability history
+- Product price tracking
 - Admin dashboard
-- Product analytics
+- Analytics dashboard
 - Progressive Web App (PWA)
 
 ---
 
-# 👨‍💻 Author
+## Acknowledgements
+
+This project uses publicly accessible data from the Amul online store to monitor product availability.
+
+It is an independent project created for educational and personal use and is not affiliated with or endorsed by Amul.
+
+---
+
+## Author
 
 **Kartik Singh**
 
-Computer Science Engineering Student
+Final Year B.Tech Computer Science Engineering Student
 
-GitHub:
-https://github.com/singhkartik7
-
----
-
-# ⭐ Support
-
-If you found this project useful, consider giving it a ⭐ on GitHub.
-
-It helps others discover the project and motivates further development.
+- GitHub: https://github.com/singhkartik7
+- LinkedIn: https://www.linkedin.com/in/singhkartik7
 
 ---
 
-# 📄 License
+## Contributing
+
+Contributions, suggestions and bug reports are always welcome.
+
+If you find an issue or have an idea for improving the project, feel free to open an Issue or submit a Pull Request.
+
+---
+
+## License
 
 This project is licensed under the MIT License.
+
+---
+
+<div align="center">
+
+### ⭐ If you found this project useful, consider giving it a star!
+
+It helps others discover the project and motivates future development.
+
+</div>

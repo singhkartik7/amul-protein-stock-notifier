@@ -1,8 +1,30 @@
 const axios = require("axios");
 const { CookieJar } = require("tough-cookie");
 const { wrapper } = require("axios-cookiejar-support");
+const crypto = require("crypto");
+
+const STORE_ID = "62fa94df8c13af2e242eba16";
+
+function calculateTid(sessionTid) {
+
+    const timestamp = Date.now().toString();
+
+    const random = Math.floor(Math.random() * 1000);
+
+    const hash = crypto
+        .createHash("sha256")
+        .update(
+            `${STORE_ID}:${timestamp}:${random}:${sessionTid}`
+        )
+        .digest("hex");
+
+    return `${timestamp}:${random}:${hash}`;
+
+}
 
 async function getSession() {
+
+    
 
     const jar = new CookieJar();
 
@@ -13,11 +35,25 @@ async function getSession() {
         })
     );
 
-    // Open Amul homepage
-    await client.get(
-        "https://shop.amul.com/en/browse/protein"
-    );
+   // Open Amul homepage
+await client.get(
+    "https://shop.amul.com/en/browse/protein"
+);
 
+// Get session FIRST
+const info = await client.get(
+    "https://shop.amul.com/user/info.js"
+);
+
+const match = info.data.match(
+    /"tid":"([^"]+)"/
+);
+
+if (!match) {
+    throw new Error("Could not extract session tid.");
+}
+
+// THEN warm up the pincode endpoint
 await client.get(
     "https://shop.amul.com/entity/pincode",
     {
@@ -35,22 +71,25 @@ await client.get(
     }
 );
 
-    // Get session
-    const info = await client.get(
-        "https://shop.amul.com/user/info.js"
-    );
+const apiTid = calculateTid(match[1]);
 
-    const match = info.data.match(
-        /"tid":"([^"]+)"/
-    );
-
-    if (!match) {
-
-        throw new Error(
-            "Could not extract session tid."
-        );
-
+await client.put(
+    "https://shop.amul.com/entity/ms.settings/_/setPreferences",
+    {
+        data: {
+            store: "rajasthan"
+        }
+    },
+    {
+        headers: {
+            referer: "https://shop.amul.com/en/browse/protein",
+            accept: "application/json",
+            frontend: "1",
+            tid: apiTid
+        }
     }
+);
+    
 
     const cookies = await jar.getCookies(
         "https://shop.amul.com"

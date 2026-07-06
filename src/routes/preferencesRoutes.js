@@ -357,18 +357,21 @@ if (products.length === 0) {
         });
 
     }
+catch (err) {
+    console.error("=== SAVE PREFERENCE ERROR ===");
+    console.error(err.message);
 
-    catch (err) {
-
-        console.log(err);
-
-        res.status(500).json({
-
-            message: "Server Error"
-
-        });
-
+    if (err.response) {
+        console.error("Status:", err.response.status);
+        console.error("Data:", err.response.data);
     }
+
+    console.error(err.stack);
+
+    res.status(500).json({
+        message: err.message
+    });
+}
 
 });
 

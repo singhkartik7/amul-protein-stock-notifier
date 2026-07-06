@@ -150,16 +150,20 @@ const user =
 
     }
     catch (err) {
+console.error("=== TELEGRAM CONNECT ERROR ===");
+    console.error(err.message);
 
-        console.log(err);
-
-        res.status(500).json({
-
-            message: "Server Error"
-
-        });
-
+    if (err.response) {
+        console.error("Status:", err.response.status);
+        console.error("Data:", err.response.data);
     }
+
+    console.error(err.stack);
+
+    res.status(500).json({
+        message: err.message
+    });
+}
 
 });
 

@@ -42,22 +42,18 @@ try {
 
     console.log("3. Looking up pincode:", pincode);
 
-    response = await client.get(
-        "https://shop.amul.com/entity/pincode",
-        {
-            params: {
-                limit: 50,
-                "filters[0][field]": "pincode",
-                "filters[0][value]": pincode,
-                "filters[0][operator]": "regex",
-                cf_cache: "1h"
-            },
-            headers: {
-                referer: "https://shop.amul.com/en/browse/protein",
-                accept: "application/json"
-            }
+    const qs =
+    `limit=50&filters[0][field]=pincode&filters[0][value]=${pincode}&filters[0][operator]=regex&cf_cache=1h`;
+
+response = await client.get(
+    `https://shop.amul.com/entity/pincode?${qs}`,
+    {
+        headers: {
+            referer: "https://shop.amul.com/en/browse/protein",
+            accept: "application/json"
         }
-    );
+    }
+);
 
     console.log("✅ Pincode lookup success");
 

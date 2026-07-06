@@ -13,7 +13,16 @@ async function getStoreId(
     try {
 console.log("Using session:", session.sessionTid);
 console.log("Looking up pincode:", pincode);
-        const response = await session.client.get(
+        
+const cookies = await session.jar.getCookies(
+    "https://shop.amul.com"
+);
+
+console.log(
+    "Cookies being sent:",
+    cookies.map(c => `${c.key}=${c.value}`)
+);
+const response = await session.client.get(
             "https://shop.amul.com/entity/pincode",
             {
                 params: {

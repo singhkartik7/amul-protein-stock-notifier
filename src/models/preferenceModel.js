@@ -1,7 +1,7 @@
 const pool = require("../database/db");
 const {
-    getStoreId
-} = require("../services/pincodeService");
+    lookupStoreIdByPincode
+} = require("../services/pincodeLookupService");
 const {
     getSessionCache,
     getStoreMapCache
@@ -36,9 +36,8 @@ async function savePreference(
         
 
         const storeMap = getStoreMapCache();
-const store = await getStoreId(
-    pincode,
-    storeMap
+const store = await lookupStoreIdByPincode(
+    pincode
 );
 
         storeId = store.storeId;

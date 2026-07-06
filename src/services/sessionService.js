@@ -18,6 +18,23 @@ async function getSession() {
         "https://shop.amul.com/en/browse/protein"
     );
 
+await client.get(
+    "https://shop.amul.com/entity/pincode",
+    {
+        params: {
+            limit: 50,
+            "filters[0][field]": "pincode",
+            "filters[0][value]": "302017",
+            "filters[0][operator]": "regex",
+            cf_cache: "1h"
+        },
+        headers: {
+            referer: "https://shop.amul.com/en/browse/protein",
+            accept: "application/json"
+        }
+    }
+);
+
     // Get session
     const info = await client.get(
         "https://shop.amul.com/user/info.js"

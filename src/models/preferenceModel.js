@@ -36,12 +36,10 @@ async function savePreference(
         
 
         const storeMap = getStoreMapCache();
-const session = getSessionCache();
-        const store = await getStoreId(
-            pincode,
-            session.cookieHeader,
-            storeMap
-        );
+const store = await getStoreId(
+    pincode,
+    storeMap
+);
 
         storeId = store.storeId;
 

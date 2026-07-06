@@ -2,49 +2,32 @@ const { getSessionCache } = require("./cacheService");
 
 async function getStoreId(
     pincode,
-    cookieHeader,
     storeMap
 ) {
 
-    const headers = {
-        ...getSessionCache().pincodeHeaders,
-        cookie: cookieHeader
-    };
+    const session = getSessionCache();
 
-    delete headers.host;
-    delete headers["content-length"];
-
-    const response = await fetch(
-        `https://shop.amul.com/entity/pincode?limit=50&filters[0][field]=pincode&filters[0][value]=${pincode}&filters[0][operator]=regex&cf_cache=1h`,
+    const response = await session.client.get(
+        "https://shop.amul.com/entity/pincode",
         {
-            headers
+            params: {
+                limit: 50,
+                "filters[0][field]": "pincode",
+                "filters[0][value]": pincode,
+                "filters[0][operator]": "regex",
+                cf_cache: "1h"
+            },
+            headers: {
+                referer: "https://shop.amul.com/en/browse/protein",
+                accept: "application/json"
+            }
         }
     );
 
-    console.log(pincode, response.status);
+    const json = response.data;
 
-    if (response.status === 401) {
-
-        throw new Error("SESSION_EXPIRED");
-
-    }
-
-    if (!response.ok) {
-
-        throw new Error(
-            `Failed to fetch pincode (${response.status})`
-        );
-
-    }
-
-    const json = await response.json();
-
-    if (!json.records || json.records.length === 0) {
-
-        throw new Error(
-            `Pincode ${pincode} not found`
-        );
-
+    if (!json.records.length) {
+        throw new Error(`Pincode ${pincode} not found`);
     }
 
     const alias = json.records[0].substore.toLowerCase();
@@ -52,18 +35,13 @@ async function getStoreId(
     const storeId = storeMap.get(alias);
 
     if (!storeId) {
-
-        throw new Error(
-            `No store found for alias ${alias}`
-        );
-
+        throw new Error(`No store for alias ${alias}`);
     }
 
     return {
         alias,
         storeId
     };
-
 }
 
 module.exports = {

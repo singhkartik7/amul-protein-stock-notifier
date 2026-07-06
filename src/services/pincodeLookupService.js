@@ -18,20 +18,31 @@ async function lookupStoreIdByPincode(pincode) {
     );
 
     // Open Amul
-    await client.get(
-        "https://shop.amul.com/en/browse/protein"
-    );
+    console.log("1. Opening homepage...");
+
+await client.get(
+    "https://shop.amul.com/en/browse/protein"
+);
 
     // Create session
-    await client.get(
-        "https://shop.amul.com/user/info.js"
-    );
+    console.log("2. Getting user info...");
 
-    // Load alias -> storeId map
-    const storeMap = await getStoreMap(client);
+await client.get(
+    "https://shop.amul.com/user/info.js"
+);
+
 
     // Lookup pincode
-    const response = await client.get(
+
+// Lookup pincode
+
+let response;
+
+try {
+
+    console.log("3. Looking up pincode:", pincode);
+
+    response = await client.get(
         "https://shop.amul.com/entity/pincode",
         {
             params: {
@@ -48,6 +59,17 @@ async function lookupStoreIdByPincode(pincode) {
         }
     );
 
+    console.log("✅ Pincode lookup success");
+
+} catch (err) {
+
+    console.log("❌ PINCODE LOOKUP FAILED");
+    console.log("Status:", err.response?.status);
+    console.log("Response:", err.response?.data);
+
+    throw err;
+
+}
     if (!response.data.records.length) {
 
         throw new Error(
@@ -59,8 +81,17 @@ async function lookupStoreIdByPincode(pincode) {
     const alias =
         response.data.records[0].substore.toLowerCase();
 
+        console.log("4. Loading store map...");
+
+const storeMap = await getStoreMap(client);
+
+console.log("✅ Store map loaded.");
+
     const storeId =
         storeMap.get(alias);
+
+        console.log("Alias:", alias);
+console.log("Store ID:", storeId);
 
     if (!storeId) {
 

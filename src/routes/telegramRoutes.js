@@ -17,7 +17,8 @@ const {
 
 const {
     getPreferenceByUserId,
-    savePreference
+    savePreference,
+    updateChatId
 } = require("../models/preferenceModel");
 // ========================================
 // Telegram Link
@@ -132,11 +133,11 @@ const user =
 
         }
 
-        await savePreference(
+        await updateChatId(
 
             user.id,
 
-            preference.pincode,
+            
 
             chatId
 
@@ -199,15 +200,10 @@ router.post("/disconnect", auth, async (req, res) => {
 
         }
 
-        await savePreference(
-
-            user.id,
-
-            preference.pincode,
-
-            null
-
-        );
+        await updateChatId(
+    user.id,
+    null
+);
 
         res.json({
 

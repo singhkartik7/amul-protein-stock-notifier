@@ -99,6 +99,28 @@ VALUES ($1,$2,$3,$4)
 
 }
 
+async function updateChatId(
+    userId,
+    chatId
+) {
+
+    await pool.query(
+
+        `UPDATE preferences
+
+         SET chat_id = $1
+
+         WHERE user_id = $2`,
+
+        [
+            chatId,
+            userId
+        ]
+
+    );
+
+}
+
 async function deletePreference(userId) {
 
     await pool.query(
@@ -272,6 +294,8 @@ module.exports = {
     getPreferenceByUserId,
 
     savePreference,
+
+    updateChatId,
 
     deletePreference,
 

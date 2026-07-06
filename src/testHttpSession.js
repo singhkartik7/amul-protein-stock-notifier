@@ -78,15 +78,18 @@ console.log(
 
     console.log("Searching pincode...");
 
-    const pincode = await client.get(
-        "https://shop.amul.com/entity/pincode?limit=50&filters[0][field]=pincode&filters[0][value]=302017&filters[0][operator]=regex&cf_cache=1h",
-        {
-            headers: {
-                referer: "https://shop.amul.com/en/browse/protein",
-                accept: "application/json"
-            }
+  const pincode = await client.get(
+    "https://shop.amul.com/entity/pincode?limit=50&filters[0][field]=pincode&filters[0][value]=302017&filters[0][operator]=regex&cf_cache=1h",
+    {
+        headers: {
+            referer: "https://shop.amul.com/en/browse/protein",
+            accept: "application/json",
+            frontend: "1",
+            base_url: "https://shop.amul.com/en/browse/protein",
+            tid: apiTid
         }
-    );
+    }
+);
 
     console.log("Pincode Status:", pincode.status);
 

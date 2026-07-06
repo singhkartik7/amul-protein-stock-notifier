@@ -60,51 +60,7 @@ const match = info.data.match(
 if (!match) {
     throw new Error("Could not extract session tid.");
 }
-/*try{
-// THEN warm up the pincode endpoint
-await client.get(
-    "https://shop.amul.com/entity/pincode",
-    {
-        params: {
-            limit: 50,
-            "filters[0][field]": "pincode",
-            "filters[0][value]": "302017",
-            "filters[0][operator]": "regex",
-            cf_cache: "1h"
-        },
-        headers: {
-            referer: "https://shop.amul.com/en/browse/protein",
-            accept: "application/json"
-        }
-    }
-);
 
-const apiTid = calculateTid(match[1]);
-
-await client.put(
-    "https://shop.amul.com/entity/ms.settings/_/setPreferences",
-    {
-        data: {
-            store: "rajasthan"
-        }
-    },
-    {
-        headers: {
-            referer: "https://shop.amul.com/en/browse/protein",
-            accept: "application/json",
-            frontend: "1",
-            tid: apiTid
-        }
-    }
-);
-}
-catch (err) {
-
-    console.log("SESSION INIT FAILED");
-    console.log(err.response?.status);
-    console.log(err.response?.data);
-    
-}*/
     const cookies = await jar.getCookies(
         "https://shop.amul.com"
     );

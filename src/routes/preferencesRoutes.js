@@ -108,18 +108,27 @@ const email = req.user.email;
         });
 
     }
-    catch (err) {
+   catch (err) {
 
-        console.log(err);
+    console.log(err);
 
-        res.status(500).json({
+    if (err.status) {
 
-            message:
-                "Server Error"
+        return res.status(err.status).json({
+
+            message: err.message
 
         });
 
     }
+
+    res.status(500).json({
+
+        message: "Server Error"
+
+    });
+
+}
 
 });
 

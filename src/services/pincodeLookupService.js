@@ -83,11 +83,15 @@ response = await client.get(
 }
     if (!response.data.records.length) {
 
-        throw new Error(
-            `Pincode ${pincode} not found`
-        );
+    const error = new Error(
+        "This pincode is not serviceable by Amul."
+    );
 
-    }
+    error.status = 400;
+
+    throw error;
+
+}
 
     const alias =
         response.data.records[0].substore.toLowerCase();

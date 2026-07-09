@@ -57,11 +57,9 @@ async function checkStock() {
 
                 activeGroupedPreferences[storeId] = {
 
-                    pincode: group.pincode,
+    users: activeUsers
 
-                    users: activeUsers
-
-                };
+};
 
             }
 
@@ -93,27 +91,23 @@ async function checkStock() {
 
                 const processStart = Date.now();
 
-                productsFound += await processProducts(
+               productsFound += await processProducts(
 
-                    {
+    {
+        data: products
+    },
 
-                        data: products
+    group.users,
 
-                    },
+    stockMap,
 
-                    group.users,
+    sendNotification,
 
-                    stockMap,
+    shouldNotify,
 
-                    sendNotification,
+    storeId
 
-                    shouldNotify,
-
-                    group.pincode,
-
-                    storeId
-
-                );
+);
 
                 console.log(
 

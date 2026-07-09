@@ -14,8 +14,6 @@ async function processProducts(
 
     shouldNotify,
 
-    pincode,
-
     storeId
 
 ) {
@@ -44,19 +42,19 @@ async function processProducts(
 
             await shouldNotify(
 
-                product,
+    product,
 
-                stockMap,
+    stockMap,
 
-                sendNotification,
+    sendNotification,
 
-                user.chatId,
+    user.chatId,
 
-                pincode,
+    user.pincode,
 
-                storeId
+    storeId
 
-            );
+);
 
         }
 

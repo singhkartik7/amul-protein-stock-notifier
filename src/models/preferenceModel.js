@@ -203,11 +203,9 @@ for (const row of result.rows) {
 
         grouped[row.store_id] = {
 
-            pincode: row.pincode,
+    users: []
 
-            users: []
-
-        };
+};
 
     }
 
@@ -221,15 +219,17 @@ for (const row of result.rows) {
 
         user = {
 
-            email: row.email,
+    email: row.email,
 
-            chatId: row.chat_id,
+    chatId: row.chat_id,
 
-            notifyUntil: row.notify_until,
+    pincode: row.pincode,
 
-            products: []
+    notifyUntil: row.notify_until,
 
-        };
+    products: []
+
+};
 
         grouped[row.store_id].users.push(user);
 

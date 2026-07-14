@@ -1,5 +1,9 @@
 const TelegramBot = require("node-telegram-bot-api");
 
+const {
+    disableTelegram
+} = require("./models/preferenceModel");
+
 const bot = new TelegramBot(process.env.BOT_TOKEN);
 
 async function sendNotification(
@@ -54,27 +58,113 @@ ${productDetails}
             }
 
         );
+const now = new Date().toLocaleString("en-IN");
+      console.log(`
+====================================
+[${now}]
+Telegram Notification Sent
+====================================
 
-        console.log(
+Chat ID : ${chatId}
 
-            "Telegram notification sent."
+Product : ${product.name}
 
-        );
+Pincode : ${pincode}
+
+Quantity: ${product.inventory_quantity}
+
+====================================
+`);
 
     }
 
-    catch (err) {
+  catch (err) {
 
-    if (err.response?.body?.error_code === 401) {
+    const code = err.response?.body?.error_code;
 
+    if (code === 401) {
         console.log("❌ Invalid Telegram Bot Token");
-
         return;
-
     }
 
-    console.error(err);
+   if (code === 403) {
 
+    const now = new Date().toLocaleString("en-IN");
+
+    console.log(`
+====================================
+❌ [${now}]
+Telegram Notification Failed
+====================================
+
+Chat ID : ${chatId}
+
+Reason  : User blocked the bot (403)
+
+Action  : Removing Chat ID...
+
+====================================
+`);
+
+    try {
+
+        await disableTelegram(chatId);
+
+        console.log(`
+====================================
+🧹 Telegram Cleanup
+====================================
+
+Chat ID : ${chatId}
+
+Status  : Chat ID removed successfully.
+
+User will no longer be checked
+until Telegram is connected again.
+
+====================================
+`);
+
+    } catch (dbErr) {
+
+        console.error(`
+====================================
+❌ Database Cleanup Failed
+====================================
+
+Chat ID : ${chatId}
+
+Reason  : ${dbErr.message}
+
+====================================
+`);
+    }
+
+    return;
+}
+
+    const now = new Date().toLocaleString("en-IN");
+
+console.log(`
+====================================
+❌ [${now}]
+Telegram Error
+====================================
+
+Chat ID : ${chatId}
+
+Code    : ${code || "Unknown"}
+
+Reason  : ${err.response?.body?.description || err.message}
+
+Product : ${product.name}
+
+Pincode : ${pincode}
+
+====================================
+`);
+
+console.error(err);
 }
 
 }

@@ -288,6 +288,22 @@ async function stopNotifications(userId) {
     );
 
 }
+async function disableTelegram(chatId) {
+
+    await pool.query(
+
+        `UPDATE preferences
+
+         SET chat_id = NULL
+
+         WHERE chat_id = $1`,
+
+        [chatId]
+
+    );
+
+}
+
 module.exports = {
 
     getPreferenceByUserId,
@@ -304,6 +320,8 @@ module.exports = {
 
     updateNotifyUntil,
 
-    stopNotifications
+    stopNotifications,
+
+    disableTelegram
 
 };

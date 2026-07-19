@@ -44,9 +44,12 @@ const info = await curlRequest({
     url: "https://shop.amul.com/user/info.js",
     jar
 });
-if (!info.setCookies || info.setCookies.length === 0) {
-    throw new Error("No cookies received from Amul API");
-}
+console.log("========== USER INFO ==========");
+console.log("Status:", info.status);
+console.log("Set-Cookies:", info.setCookies);
+console.log("Body:");
+console.log(info.body);
+console.log("===============================");
 const debugCookies = await jar.getCookies(
     "https://shop.amul.com"
 );

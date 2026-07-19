@@ -2,6 +2,7 @@ const axios = require("axios");
 const { CookieJar } = require("tough-cookie");
 const { wrapper } = require("axios-cookiejar-support");
 const crypto = require("crypto");
+const { curlRequest, CurlHttpError } = require("../utils/curl");
 
 const STORE_ID = "62fa94df8c13af2e242eba16";
 
@@ -35,15 +36,19 @@ async function getSession() {
         })
     );
 
-   // Open Amul homepage
-await client.get(
-    "https://shop.amul.com/en/browse/protein"
-);
+  // Open Amul homepage
+await curlRequest({
+    method: "GET",
+    url: "https://shop.amul.com/en/browse/protein",
+    jar
+});
 
 // Get session FIRST
-const info = await client.get(
-    "https://shop.amul.com/user/info.js"
-);
+const info = await curlRequest({
+    method: "GET",
+    url: "https://shop.amul.com/user/info.js",
+    jar
+});
 const debugCookies = await jar.getCookies(
     "https://shop.amul.com"
 );
@@ -53,10 +58,9 @@ console.log("\nCookies after user/info:");
 console.log(
     debugCookies.map(c => `${c.key}=${c.value}`)
 );
-const match = info.data.match(
+const match = info.body.match(
     /"tid":"([^"]+)"/
 );
-
 if (!match) {
     throw new Error("Could not extract session tid.");
 }

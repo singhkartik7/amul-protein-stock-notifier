@@ -58,13 +58,21 @@ const PORT = process.env.PORT || 3001;
 
     console.log("✅ Cache initialized");
 
-    startStockChecker();
+    if (process.env.ENABLE_STOCK_CHECKER === "true") {
+
+        console.log("🚀 Starting stock checker...");
+
+        startStockChecker();
+
+    } else {
+
+        console.log("⏸️ Stock checker disabled");
+
+    }
 
     app.listen(PORT, () => {
 
-        console.log(
-            `Server running on ${PORT}`
-        );
+        console.log(`Server running on ${PORT}`);
 
     });
 

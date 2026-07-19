@@ -1,6 +1,6 @@
-const axios = require("axios");
+
 const { CookieJar } = require("tough-cookie");
-const { wrapper } = require("axios-cookiejar-support");
+
 const crypto = require("crypto");
 const { curlRequest, CurlHttpError } = require("../utils/curl");
 
@@ -29,12 +29,7 @@ async function getSession() {
 
     const jar = new CookieJar();
 
-    const client = wrapper(
-        axios.create({
-            jar,
-            withCredentials: true
-        })
-    );
+   
 
   // Open Amul homepage
 await curlRequest({
@@ -78,7 +73,7 @@ if (!match) {
 
     return {
 
-        client,
+       
 
         jar,
 

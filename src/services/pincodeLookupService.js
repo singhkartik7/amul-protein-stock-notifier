@@ -1,9 +1,15 @@
-const axios = require("axios");
-const { CookieJar } = require("tough-cookie");
-const { wrapper } = require("axios-cookiejar-support");
+const {
+    CookieJar
+} = require("tough-cookie");
+
+const {
+    curlRequest
+} = require("../utils/curl");
+
 const {
     calculateTid
 } = require("../utils/tid");
+
 const {
     getStoreMap
 } = require("./storeService");
@@ -12,122 +18,89 @@ async function lookupStoreIdByPincode(pincode) {
 
     const jar = new CookieJar();
 
-    const client = wrapper(
-        axios.create({
-            jar,
-            withCredentials: true
-        })
-    );
-
-    // Open Amul
     console.log("1. Opening homepage...");
 
-await client.get(
-    "https://shop.amul.com/en/browse/protein"
-);
+    await curlRequest({
+        method: "GET",
+        url: "https://shop.amul.com/en/browse/protein",
+        jar
+    });
 
-    // Create session
     console.log("2. Getting user info...");
 
-const info = await client.get(
-    "https://shop.amul.com/user/info.js"
-);
+    const info = await curlRequest({
+        method: "GET",
+        url: "https://shop.amul.com/user/info.js",
+        jar
+    });
 
-const match = info.data.match(/"tid":"([^"]+)"/);
+    const match = info.body.match(/"tid":"([^"]+)"/);
 
-if (!match) {
-    throw new Error("Could not extract session tid.");
-}
+    if (!match) {
+        throw new Error("Could not extract session tid.");
+    }
 
-const sessionTid = match[1];
+    const sessionTid = match[1];
 
-const apiTid = calculateTid(sessionTid);
-
-
-    // Lookup pincode
-
-// Lookup pincode
-
-let response;
-
-try {
+    const tid = calculateTid(sessionTid);
 
     console.log("3. Looking up pincode:", pincode);
 
-    const qs =
-    `limit=50&filters[0][field]=pincode&filters[0][value]=${pincode}&filters[0][operator]=regex&cf_cache=1h`;
+    const url =
+        `https://shop.amul.com/entity/pincode?limit=50&filters[0][field]=pincode&filters[0][value]=${encodeURIComponent(
+            pincode
+        )}&filters[0][operator]=regex&cf_cache=1h`;
 
-response = await client.get(
-    `https://shop.amul.com/entity/pincode?${qs}`,
-    {
+    const response = await curlRequest({
+        method: "GET",
+        url,
+        jar,
         headers: {
-    referer: "https://shop.amul.com/en/browse/protein",
-    accept: "application/json",
-    frontend: "1",
-    base_url: "https://shop.amul.com/en/browse/protein",
-    tid: apiTid
-}
+            referer: "https://shop.amul.com/en/browse/protein",
+            accept: "application/json",
+            frontend: "1",
+            tid
+        }
+    });
+
+    const json = JSON.parse(response.body);
+
+    if (!json.records || json.records.length === 0) {
+        const error = new Error(
+            "This pincode is not serviceable by Amul."
+        );
+
+        error.status = 400;
+
+        throw error;
     }
-);
-
-    console.log("✅ Pincode lookup success");
-
-} catch (err) {
-
-    console.log("❌ PINCODE LOOKUP FAILED");
-    console.log("Status:", err.response?.status);
-    console.log("Response:", err.response?.data);
-
-    throw err;
-
-}
-    if (!response.data.records.length) {
-
-    const error = new Error(
-        "This pincode is not serviceable by Amul."
-    );
-
-    error.status = 400;
-
-    throw error;
-
-}
 
     const alias =
-        response.data.records[0].substore.toLowerCase();
+        json.records[0].substore.toLowerCase();
 
-        console.log("4. Loading store map...");
+    console.log("4. Loading store map...");
 
-const storeMap = await getStoreMap(client);
+    const storeMap = await getStoreMap(jar);
 
-console.log("✅ Store map loaded.");
+    console.log("✅ Store map loaded.");
 
-    const storeId =
-        storeMap.get(alias);
-
-        console.log("Alias:", alias);
-console.log("Store ID:", storeId);
+    const storeId = storeMap.get(alias);
 
     if (!storeId) {
-
         throw new Error(
             `No store found for alias ${alias}`
         );
-
     }
 
+    console.log("Alias:", alias);
+    console.log("Store ID:", storeId);
+
     return {
-
         alias,
-
         storeId
-
     };
-
 }
 
 module.exports = {
-
     lookupStoreIdByPincode
-
 };

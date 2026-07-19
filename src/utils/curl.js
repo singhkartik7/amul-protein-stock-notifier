@@ -35,7 +35,7 @@ class CurlHttpError extends Error {
 function executeCurl(args) {
     return new Promise((resolve, reject) => {
 
-        console.log("\n========== CURL COMMAND ==========");
+        
         console.log("curl", args.join(" "));
         console.log("==================================\n");
 

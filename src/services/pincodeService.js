@@ -3,45 +3,45 @@ const {
     refreshSession
 } = require("./cacheService");
 
+const {
+    curlRequest,
+    CurlHttpError
+} = require("../utils/curl");
+
+const {
+    calculateTid
+} = require("../utils/tid");
+
 async function getStoreId(
     pincode,
     storeMap
 ) {
-
     let session = getSessionCache();
 
     try {
-console.log("Using session:", session.sessionTid);
-console.log("Looking up pincode:", pincode);
-        
-const cookies = await session.jar.getCookies(
-    "https://shop.amul.com"
-);
+        console.log("Using session:", session.sessionTid);
+        console.log("Looking up pincode:", pincode);
 
-console.log(
-    "Cookies being sent:",
-    cookies.map(c => `${c.key}=${c.value}`)
-);
-const response = await session.client.get(
-            "https://shop.amul.com/entity/pincode",
-            {
-                params: {
-                    limit: 50,
-                    "filters[0][field]": "pincode",
-                    "filters[0][value]": pincode,
-                    "filters[0][operator]": "regex",
-                    cf_cache: "1h"
-                },
-                headers: {
-                    referer: "https://shop.amul.com/en/browse/protein",
-                    accept: "application/json"
-                }
+        const url =
+            `https://shop.amul.com/entity/pincode?limit=50&filters[0][field]=pincode&filters[0][value]=${encodeURIComponent(
+                pincode
+            )}&filters[0][operator]=regex&cf_cache=1h`;
+
+        const response = await curlRequest({
+            method: "GET",
+            url,
+            jar: session.jar,
+            headers: {
+                referer: "https://shop.amul.com/en/browse/protein",
+                accept: "application/json",
+                frontend: "1",
+                tid: calculateTid(session.sessionTid)
             }
-        );
+        });
 
-        const json = response.data;
+        const json = JSON.parse(response.body);
 
-        if (!json.records.length) {
+        if (!json.records || json.records.length === 0) {
             throw new Error(`Pincode ${pincode} not found`);
         }
 
@@ -57,32 +57,22 @@ const response = await session.client.get(
             alias,
             storeId
         };
-
     } catch (err) {
-
-        if (err.response && err.response.status === 401) {
-
+        if (
+            err instanceof CurlHttpError &&
+            err.status === 401
+        ) {
             console.log("🔄 Session expired while fetching pincode...");
+            await refreshSession();
 
-            console.log("🔄 Session expired, refreshing...");
-
-await refreshSession();
-
-const newSession = getSessionCache();
-
-console.log("New session:", newSession.sessionTid);
-
-return getStoreId(
-    pincode,
-    storeMap
-);
-
+            return getStoreId(
+                pincode,
+                storeMap
+            );
         }
 
         throw err;
-
     }
-
 }
 
 module.exports = {

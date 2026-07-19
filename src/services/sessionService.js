@@ -49,9 +49,7 @@ const info = await curlRequest({
     url: "https://shop.amul.com/user/info.js",
     jar
 });
-if (!info.setCookies || info.setCookies.length === 0) {
-    throw new Error("No cookies received from Amul API");
-}
+/*
 const debugCookies = await jar.getCookies(
     "https://shop.amul.com"
 );
@@ -60,7 +58,7 @@ console.log("\nCookies after user/info:");
 
 console.log(
     debugCookies.map(c => `${c.key}=${c.value}`)
-);
+);*/
 const match = info.body.match(
     /"tid":"([^"]+)"/
 );
@@ -72,9 +70,7 @@ if (!match) {
         "https://shop.amul.com"
     );
 
-    const cookieHeader = cookies
-        .map(cookie => `${cookie.key}=${cookie.value}`)
-        .join("; ");
+    const cookieHeader = "";
 
     return {
 

@@ -1,4 +1,4 @@
-const { execFile } = require("node:child_process");
+const { Impit } = require("impit");
 
 const CURL_TIMEOUT_SECONDS = 30;
 const CURL_MAX_BUFFER_BYTES = 25 * 1024 * 1024;
@@ -22,7 +22,9 @@ const DEFAULT_HEADERS = {
     "user-agent":
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
 };
-
+const impit = new Impit({
+    browser: "chrome"
+});
 class CurlHttpError extends Error {
     constructor(status, responseBody, url) {
         super(`Curl request to ${url} failed with HTTP ${status}`);
@@ -32,127 +34,50 @@ class CurlHttpError extends Error {
     }
 }
 
-function executeCurl(args) {
-    return new Promise((resolve, reject) => {
-        execFile(
-            "curl",
-            args,
-            {
-                encoding: "utf8",
-                maxBuffer: CURL_MAX_BUFFER_BYTES
-            },
-            (error, stdout, stderr) => {
-                if (error) {
-                    const details = (stderr && stderr.trim()) || error.message;
-                    reject(new Error(`Curl request failed: ${details}`));
-                    return;
-                }
 
-                resolve(stdout);
-            }
-        );
-    });
-}
-
-function parseCurlOutput(output) {
-    let cursor = 0;
-    let status = 0;
-    let headers = {};
-
-    while (output.startsWith("HTTP/", cursor)) {
-        const separator = output.indexOf("\r\n\r\n", cursor);
-        if (separator === -1) break;
-
-        const headerBlock = output.slice(cursor, separator);
-        const lines = headerBlock.split("\r\n");
-        const statusMatch = lines[0] && lines[0].match(/^HTTP\/\S+\s+(\d{3})/);
-        if (!statusMatch) break;
-
-        status = Number(statusMatch[1]);
-        headers = {};
-
-        for (const line of lines.slice(1)) {
-            const colonIndex = line.indexOf(":");
-            if (colonIndex === -1) continue;
-
-            const name = line.slice(0, colonIndex).trim().toLowerCase();
-            const value = line.slice(colonIndex + 1).trim();
-            (headers[name] ??= []).push(value);
-        }
-
-        cursor = separator + 4;
-    }
-
-    if (!status) {
-        throw new Error("Curl response did not contain an HTTP status line");
-    }
-
-    return {
-        status,
-        headers,
-        body: output.slice(cursor),
-        setCookies: headers["set-cookie"] ?? []
-    };
-}
 
 async function curlRequest({
     url,
     method = "GET",
     headers = {},
-    body,
-    jar
+    body
 }) {
-    const args = [
-        "--silent",
-        "--show-error",
-        "--location",
-        "--globoff",
-        "--compressed",
-        "--connect-timeout",
-        "10",
-        "--max-time",
-        CURL_TIMEOUT_SECONDS.toString(),
-        "--dump-header",
-        "-",
-        "--request",
-        method
-    ];
+    const finalHeaders = {
+        ...DEFAULT_HEADERS,
+        ...headers
+    };
 
- const finalHeaders = {
-    ...DEFAULT_HEADERS,
-    ...headers
-};
+    const response = await impit.fetch(url, {
+        method,
+        headers: finalHeaders,
+        body:
+            body !== undefined
+                ? JSON.stringify(body)
+                : undefined
+    });
 
-if (jar) {
-    const cookie = await jar.getCookieString(url);
+    const responseBody = await response.text();
 
-    if (cookie) {
-        finalHeaders.cookie = cookie;
-    }
-}
+    const responseHeaders = {};
 
-for (const [name, value] of Object.entries(finalHeaders)) {
-    args.push("--header", `${name}: ${value}`);
-}
-
-    if (body !== undefined) {
-        args.push("--data-raw", JSON.stringify(body));
+    for (const [key, value] of response.headers.entries()) {
+        responseHeaders[key.toLowerCase()] = [value];
     }
 
-    args.push(url);
-
-   const response = parseCurlOutput(await executeCurl(args));
-
-if (jar && response.setCookies.length) {
-    for (const cookie of response.setCookies) {
-        await jar.setCookie(cookie, url);
-    }
-}
     if (response.status >= 400) {
-        throw new CurlHttpError(response.status, response.body, url);
+        throw new CurlHttpError(
+            response.status,
+            responseBody,
+            url
+        );
     }
 
-    return response;
+    return {
+        status: response.status,
+        headers: responseHeaders,
+        body: responseBody,
+        setCookies: []
+    };
 }
 
 module.exports = {

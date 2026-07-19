@@ -6,6 +6,9 @@ COPY package*.json ./
 
 RUN npm install
 
+# Optional: verify curl exists
+RUN curl --version
+
 COPY . .
 
 ENV NODE_ENV=production

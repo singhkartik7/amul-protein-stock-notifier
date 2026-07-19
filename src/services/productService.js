@@ -1,4 +1,6 @@
 const crypto = require("crypto");
+const { parse: parseCookie } = require("tough-cookie");
+const { curlRequest, CurlHttpError } = require("../utils/curl");
 
 const {
     getSessionCache,
@@ -7,6 +9,8 @@ const {
 
 const STORE_ID = "62fa94df8c13af2e242eba16";
 const { getStoreMapCache } = require("./cacheService");
+
+const SHOP_URL = "https://shop.amul.com";
 
 function calculateTid(sessionTid) {
 
@@ -25,29 +29,54 @@ function calculateTid(sessionTid) {
 
 }
 
+
+async function applySetCookies(jar, setCookies, requestUrl) {
+
+    if (!setCookies || !setCookies.length) return;
+
+    const requestHost = new URL(requestUrl).hostname;
+
+    for (const cookieString of setCookies) {
+
+        const cookie = parseCookie(cookieString, { loose: true });
+        if (!cookie || !cookie.key) continue;
+
+        cookie.domain = requestHost;
+        await jar.setCookie(cookie.toString(), requestUrl);
+
+    }
+
+}
+
 async function setStorePreference(
-    client,
+    jar,
     sessionTid,
     alias
 ) {
 
-    await client.put(
-        "https://shop.amul.com/entity/ms.settings/_/setPreferences",
-        {
+    const url = "https://shop.amul.com/entity/ms.settings/_/setPreferences";
+    const cookie = await jar.getCookieString(SHOP_URL);
+
+    const response = await curlRequest({
+        url,
+        method: "PUT",
+        headers: {
+            referer:
+                "https://shop.amul.com/en/browse/protein",
+            accept: "application/json",
+            "content-type": "application/json",
+            frontend: "1",
+            tid: calculateTid(sessionTid),
+            ...(cookie ? { cookie } : {})
+        },
+        body: {
             data: {
                 store: alias
             }
-        },
-        {
-            headers: {
-                referer:
-                    "https://shop.amul.com/en/browse/protein",
-                accept: "application/json",
-                frontend: "1",
-                tid: calculateTid(sessionTid)
-            }
         }
-    );
+    });
+
+    await applySetCookies(jar, response.setCookies, url);
 
 }
 
@@ -73,7 +102,7 @@ if (!alias) {
 }
         await setStorePreference(
 
-            session.client,
+            session.jar,
 
             session.sessionTid,
 
@@ -81,88 +110,94 @@ if (!alias) {
 
         );
 
-        const response =
-            await session.client.get(
+        const params = new URLSearchParams();
 
-                "https://shop.amul.com/api/1/entity/ms.products",
+        params.append("fields[name]", "1");
+        params.append("fields[brand]", "1");
+        params.append("fields[categories]", "1");
+        params.append("fields[collections]", "1");
+        params.append("fields[alias]", "1");
+        params.append("fields[sku]", "1");
+        params.append("fields[price]", "1");
+        params.append("fields[compare_price]", "1");
+        params.append("fields[original_price]", "1");
+        params.append("fields[images]", "1");
+        params.append("fields[metafields]", "1");
+        params.append("fields[discounts]", "1");
+        params.append("fields[catalog_only]", "1");
+        params.append("fields[is_catalog]", "1");
+        params.append("fields[seller]", "1");
+        params.append("fields[available]", "1");
+        params.append("fields[inventory_quantity]", "1");
+        params.append("fields[net_quantity]", "1");
+        params.append("fields[num_reviews]", "1");
+        params.append("fields[avg_rating]", "1");
+        params.append("fields[inventory_low_stock_quantity]", "1");
+        params.append("fields[inventory_allow_out_of_stock]", "1");
+        params.append("fields[default_variant]", "1");
+        params.append("fields[variants]", "1");
+        params.append("fields[lp_seller_ids]", "1");
 
-                {
+        params.append("filters[0][field]", "categories");
+        params.append("filters[0][value][0]", "protein");
+        params.append("filters[0][operator]", "in");
+        params.append("filters[0][original]", "1");
 
-                    params: {
+        params.append("facets", "true");
+        params.append("facetgroup", "default_category_facet");
 
-                        "fields[name]": 1,
-                        "fields[brand]": 1,
-                        "fields[categories]": 1,
-                        "fields[collections]": 1,
-                        "fields[alias]": 1,
-                        "fields[sku]": 1,
-                        "fields[price]": 1,
-                        "fields[compare_price]": 1,
-                        "fields[original_price]": 1,
-                        "fields[images]": 1,
-                        "fields[metafields]": 1,
-                        "fields[discounts]": 1,
-                        "fields[catalog_only]": 1,
-                        "fields[is_catalog]": 1,
-                        "fields[seller]": 1,
-                        "fields[available]": 1,
-                        "fields[inventory_quantity]": 1,
-                        "fields[net_quantity]": 1,
-                        "fields[num_reviews]": 1,
-                        "fields[avg_rating]": 1,
-                        "fields[inventory_low_stock_quantity]": 1,
-                        "fields[inventory_allow_out_of_stock]": 1,
-                        "fields[default_variant]": 1,
-                        "fields[variants]": 1,
-                        "fields[lp_seller_ids]": 1,
+        params.append("limit", "32");
+        params.append("total", "1");
+        params.append("start", "0");
+        params.append("v", "5");
+        params.append("device_type", "other");
+        params.append("substore", storeId);
 
-                        "filters[0][field]": "categories",
-                        "filters[0][value][0]": "protein",
-                        "filters[0][operator]": "in",
-                        "filters[0][original]": 1,
+        
+        const query = params
+            .toString()
+            .replace(/%5B/g, "[")
+            .replace(/%5D/g, "]");
 
-                        facets: true,
-                        facetgroup:
-                            "default_category_facet",
+        const url = `https://shop.amul.com/api/1/entity/ms.products?${query}`;
 
-                        limit: 32,
-                        total: 1,
-                        start: 0,
-                        v: 5,
-                        device_type: "other",
-                        substore: storeId
+        const cookie = await session.jar.getCookieString(SHOP_URL);
 
-                    },
+        const response = await curlRequest({
+            url,
+            method: "GET",
+            headers: {
 
-                    headers: {
+                referer:
+                    "https://shop.amul.com/en/browse/protein",
 
-                        referer:
-                            "https://shop.amul.com/en/browse/protein",
+                accept:
+                    "application/json",
 
-                        accept:
-                            "application/json",
+                frontend: "1",
 
-                        frontend: "1",
+                tid: calculateTid(
+                    session.sessionTid
+                ),
 
-                        tid: calculateTid(
-                            session.sessionTid
-                        )
+                ...(cookie ? { cookie } : {})
 
-                    }
+            }
+        });
 
-                }
+        await applySetCookies(session.jar, response.setCookies, url);
 
-            );
+        const data = JSON.parse(response.body);
 
-        return response.data.data;
+        return data.data;
 
     }
 
     catch (err) {
 
         if (
-            err.response &&
-            err.response.status === 401
+            err instanceof CurlHttpError &&
+            err.status === 401
         ) {
 
             await refreshSession();

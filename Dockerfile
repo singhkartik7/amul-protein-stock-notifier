@@ -1,5 +1,10 @@
 FROM lwthiker/curl-impersonate:0.6-chrome AS curlimp
 
+RUN find / -name "curl-impersonate-chrome" 2>/dev/null
+RUN find / -name "curl_chrome116" 2>/dev/null
+RUN ls -l /usr/local/bin
+RUN ls -l /usr/local/lib
+
 FROM mcr.microsoft.com/playwright:v1.61.0-noble
 
 WORKDIR /app
@@ -13,16 +18,11 @@ RUN apt-get update && \
     ln -sf /bin/busybox /usr/local/bin/ash && \
     rm -rf /var/lib/apt/lists/*
 
-RUN which ash && ash --help | head -1
-
 RUN ldconfig
-RUN head -5 /usr/local/bin/curl_chrome116
 
 COPY package*.json ./
 RUN npm install
 
 COPY . .
-
-EXPOSE 3001
 
 CMD ["npm", "start"]

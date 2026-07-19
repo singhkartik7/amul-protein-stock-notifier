@@ -1,10 +1,15 @@
 require("dotenv").config();
 
+const { initializeCache } = require("./src/services/cacheService");
 const { getProducts } = require("./src/services/productService");
 
 (async () => {
     try {
-        const storeId = "YOUR_STORE_ID"; // use one that you know works
+        console.log("Initializing cache...");
+        await initializeCache();
+        console.log("Cache initialized.");
+
+        const storeId = "66505ff824e61363e088c3dd";
 
         console.log(`Fetching products for store: ${storeId}`);
 

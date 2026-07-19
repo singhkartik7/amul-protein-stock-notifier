@@ -95,7 +95,13 @@ function parseCurlOutput(output) {
     };
 }
 
-async function curlRequest({ url, method = "GET", headers = {}, body }) {
+async function curlRequest({
+    url,
+    method = "GET",
+    headers = {},
+    body,
+    jar
+}) {
     const args = [
         "--silent",
         "--show-error",
@@ -112,10 +118,18 @@ async function curlRequest({ url, method = "GET", headers = {}, body }) {
         method
     ];
 
-    const finalHeaders = {
+ const finalHeaders = {
     ...DEFAULT_HEADERS,
     ...headers
 };
+
+if (jar) {
+    const cookie = await jar.getCookieString(url);
+
+    if (cookie) {
+        finalHeaders.cookie = cookie;
+    }
+}
 
 for (const [name, value] of Object.entries(finalHeaders)) {
     args.push("--header", `${name}: ${value}`);
@@ -127,7 +141,13 @@ for (const [name, value] of Object.entries(finalHeaders)) {
 
     args.push(url);
 
-    const response = parseCurlOutput(await executeCurl(args));
+   const response = parseCurlOutput(await executeCurl(args));
+
+if (jar && response.setCookies.length) {
+    for (const cookie of response.setCookies) {
+        await jar.setCookie(cookie, url);
+    }
+}
     if (response.status >= 400) {
         throw new CurlHttpError(response.status, response.body, url);
     }

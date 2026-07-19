@@ -7,10 +7,7 @@ let storeMap = null;
 async function initializeCache() {
 
     session = await getSession();
-
-    storeMap = await getStoreMap(
-        session.client
-    );
+storeMap = await getStoreMap(session.jar);
 
     console.log("✅ Cache initialized");
 
@@ -50,9 +47,7 @@ async function refreshSession() {
 
     session = await getSession();
 
-    storeMap = await getStoreMap(
-        session.client
-    );
+    storeMap = await getStoreMap(session.jar);
 
     console.log("✅ Session refreshed");
 

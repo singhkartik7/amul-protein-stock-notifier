@@ -1,21 +1,20 @@
-async function getStoreMap(client) {
+const { curlRequest } = require("../utils/curl");
 
-    const response = await client.get(
-        "https://shop.amul.com/ms/store/amul/cacheEntities/auto/EN/storedata.js?version=ms176132366_1781674242046"
-    );
+async function getStoreMap(jar) {
+    const response = await curlRequest({
+        method: "GET",
+        url: "https://shop.amul.com/ms/store/amul/cacheEntities/auto/EN/storedata.js?version=ms176132366_1781674242046",
+        jar
+    });
 
-    const text = response.data;
+    const text = response.body;
 
     const match = text.match(
         /var\s+cacheEntities\d+\s*=\s*(\{[\s\S]*?\});/
     );
 
     if (!match) {
-
-        throw new Error(
-            "Could not parse storedata.js"
-        );
-
+        throw new Error("Could not parse storedata.js");
     }
 
     const cacheEntities = JSON.parse(match[1]);
@@ -23,26 +22,15 @@ async function getStoreMap(client) {
     const storeMap = new Map();
 
     for (const store of cacheEntities["ms.substores"]) {
-
-        storeMap.set(
-            store.alias.toLowerCase(),
-            store._id
-        );
+        storeMap.set(store.alias.toLowerCase(), store._id);
 
         // Reverse lookup
-        storeMap.set(
-            store._id,
-            store.alias.toLowerCase()
-        );
-
+        storeMap.set(store._id, store.alias.toLowerCase());
     }
 
     return storeMap;
-
 }
 
 module.exports = {
-
     getStoreMap
-
 };

@@ -2,6 +2,26 @@ const { execFile } = require("node:child_process");
 
 const CURL_TIMEOUT_SECONDS = 30;
 const CURL_MAX_BUFFER_BYTES = 25 * 1024 * 1024;
+const DEFAULT_HEADERS = {
+    accept: "application/json, text/plain, */*",
+    "accept-language": "en-US,en;q=0.9,hi;q=0.8,gu;q=0.7",
+    base_url: "https://shop.amul.com/en/browse/protein",
+    "cache-control": "no-cache",
+    frontend: "1",
+    pragma: "no-cache",
+    priority: "u=1, i",
+    referer: "https://shop.amul.com/en/browse/protein",
+    "sec-ch-ua":
+        '"Google Chrome";v="147", "Not.A/Brand";v="8", "Chromium";v="147"',
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": '"Linux"',
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "same-origin",
+    "sec-gpc": "1",
+    "user-agent":
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
+};
 
 class CurlHttpError extends Error {
     constructor(status, responseBody, url) {
@@ -92,9 +112,14 @@ async function curlRequest({ url, method = "GET", headers = {}, body }) {
         method
     ];
 
-    for (const [name, value] of Object.entries(headers)) {
-        args.push("--header", `${name}: ${value}`);
-    }
+    const finalHeaders = {
+    ...DEFAULT_HEADERS,
+    ...headers
+};
+
+for (const [name, value] of Object.entries(finalHeaders)) {
+    args.push("--header", `${name}: ${value}`);
+}
 
     if (body !== undefined) {
         args.push("--data-raw", JSON.stringify(body));

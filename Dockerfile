@@ -9,6 +9,7 @@ COPY --from=curlimp /usr/local/bin/ /usr/local/bin/
 COPY --from=curlimp /usr/local/lib/ /usr/local/lib/
 
 RUN ldconfig
+RUN head -5 /usr/local/bin/curl_chrome116
 
 COPY package*.json ./
 RUN npm install

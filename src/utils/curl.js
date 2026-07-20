@@ -36,8 +36,7 @@ function executeCurl(args) {
     return new Promise((resolve, reject) => {
 
         
-        console.log("curl", args.join(" "));
-        console.log("==================================\n");
+        
 
        execFile(
     "curl_chrome116",
